@@ -1,4 +1,4 @@
-----------
+﻿----------
 
 <p align="center">
   <img src="http://www.rinchem.com/images/logo.gif" alt="Slate: API Documentation Generator" width="226">
@@ -20,34 +20,79 @@ The value of the ASN comes from receiving it prior to the actual shipment. Rinch
 
 ----------
 ## Installation
-If you are looking to get started with the source code, please check out the readme in the nested **asnIntegratorConsole** folder above.
+Clone via 
+```
+$ git clone https://github.com/jdenning-rinchem/asn-integrator-console.git
+```
+or using the GitHub clone wizard and/or the GitHub Desktop application.
+<p align="left">
+  <img src="https://image.ibb.co/deCOWF/clonezip.png" alt="Slate: API Documentation Generator">
+  <br>
+</p>
 
-If you are just getting started and simply want to download the pre-built console, you may do so by downloading the RinchemAsnIntegrator.zip file (click on the file, then on the subsequent page there is a button to 'Download'). Once downloaded, extract the zip file to your desired location. Within the folder, the executable is named **'asnIntegratorConsole.exe'**; if you launch this the empty console will open. Also, within the folder is a nested folder named **'Development'** within this there is an example **'profiles.json'** file and an example **'CustomRestPayload.json'** file. 
-If you would like the console to be populated initially, you may move the 'Development' folder to 'C:/', otherwise you may point the UI to a different location by clicking the **Set 'profiles.json' Location"** button at the top of the User Interface.
+## Data Loader
+The DataLoader is a simple interface class that suppliers must implement in order to use the integrator console. It contains three methods that must be overridden: LoadData, TestData, and ConverDataToAsnObject. Descriptions of the methods may be found below. If the (UserImplementedDataLoader) DataLoader requires any initial startup data, it is recommended that the user pass this in at the APImanager constructor.
+
+#### LoadData()
+This function is where the supplier should pull in their raw data. It is implemented as an async task so that the user interface doesn't freeze up. If the data is pulled in successfully, the implementation should return true. If something goes wrong while loading the data, the implementation should return false.
+
+#### TestData()
+Although not entirely necessary, it is highly suggested that the supplier implement their own data checking in this method in order to ensure that their raw data has been imported correctly, and the assumed data model is actually in place. If the data is properly validated, the implementation should return true, if something has gone wrong the implementation should return false.
+
+#### ConvertDataToAsnObject()
+In order to minimize complexity for the implementers, an AsnObject class has been created. It contains all of the fields that the asn api will accept (More information about the AsnObject can be found below). Implementers should create a new instance of AsnObject and then build up the desired fields. After the fields have been updated, the AsnObject should be returned. After being returned, the APImanager then verifies that all necessary fields have proper values. After verification, the AsnObject is then serialized to a json string and then is ready to be sent to the API call.
 
 
-## Interface
-The interface is broken down into 5 sections so that the customer path to integration is minimized and itemizable. The sections consist of Credentials, Load Data, Convert Data, API Setup and API Call.
+## Connecting with the API
 
-### Credentials
-Connecting to Salesforce environment is the first step to sending ASN data.
-Connecting to the environment requires some configuration items that your Rinchem Integration Specialist will provide.  For both Sandbox (Test) and Production (Live) Environments:
+Sending ASN data via the API requires some configuration items that your Rinchem Integration Specialist will provide.  For both Sandbox (Test) and Production (Live) Environments:
 
 An **account name** and **password** will be assigned to your company for ASN and other integration methods. 
 In addition to account name and password,  a **Consumer Key**, **Consumer Secret**, and **Security Token** will also be provided by your Integration Specialist. 
 
-These should be entered into the corresponding fields in the credentials section of the GUI. (If you don't see the fields, please click the 'Edit Profile' button) After, you have entered your credential information, it is suggested that you 'Save' it. This prevents you from needing to re-enter data the next time that you use the console. For security reasons, the password is not saved, and will have to be entered each time.
+These should be entered into the credentials section of the GUI.
+Profiles are currently loaded and saved to C:/Development/profiles.json
+This can be changed in the App.config file.
+
+Saved profiles are not encrypted. Passwords are not stored.
 
 
-### Data Retrieval
-The two data sections are where the customer will have to implement their own solution. Data retrieval consists of connecting to the current raw data source that needs to be sent through the API. It should also verify that the expected data format was pulled in. 
-When the desired data loader is selected from the drop down, any specified 'custom fields' will be displayed below it. Currently, the only built in solution is the RinchemJsonLoader, to use this, you will need to provide the location of a .json file that is already in the proper ASN format.
+### APImanager
+Everything that the GUI executes first runs through the APImanager. It keeps an instance of the current Profile, the SalesForceConnection, the DataLoader, and the asnObject.
 
-### Data Conversion
-Before the API call can be sent, the data must be in a very specific format. During this call the user must convert their raw data object, to the proper AsnObject format. The system then verifies that all required fields are inputed and subsequently serializes the AsnObject into a json string that can then be transmitted in the API call.
+### Authentication URLs:
 
-#### AsnObject
-The AsnObject is a simple class following the ASN json format.
+**Sandbox (Test)**
+```
+https://test.salesforce.com/services/oauth2/token
+```
+
+**Production (Live)**
+```
+https://login.salesforce.com/services/oauth2/token
+```
+
+### API URLs:
+
+**Sandbox (Test)**
+```
+https://salesforceinstance.rinchem.com/services/apexrest/v1/ASN__c
+```
+**Production (Live)**
+
+```
+https://salesforceinstance.rinchem.com/services/apexrest/v1/ASN__c
+```
+
+Depending on authentication, a unique URI is created for sending the request/
+```
+https://rinchem--ASNQA.cs60.my.salesforce.com/services/data/v37.0/sobjects/ASN__c
+```
+
+To create an ASN request, a message is populated in collaboration with data from your existing system which will be parsed into ours. Data will be passed in JSON format
+
+### AsnObject
+The AsnObject is a class that mimicks the following json format.
 ```
 {
 	"rqst": {
@@ -111,8 +156,7 @@ The AsnObject is a simple class following the ASN json format.
 	}
 }
 ```
-#### Required Fields:
-If any of the following required fields are missing, the reformat will fail and the guilty fields will be listed in the **Log Output**.
+### Required Fields:
 ```
 {
 	"rqst": {
@@ -147,5 +191,21 @@ If any of the following required fields are missing, the reformat will fail and 
 ```
 
 
-### API Call
-The API Call serializes all of the pre-entered and converted data into one json strong string and then sends it over an HTTPclient to the Salesorce server, where the API receives and handles the package.
+### ASN integration supports  these HTTP methods:
+```
+POST 
+```
+
+
+a request is then sent to our API with method and content
+```
+{Method: POST, RequestUri: 'https://rinchem--asnqa.cs60.my.salesforce.com/services/data/v37.0/sobjects/ASN__c', Version: 1.1, Content: <"this will be body of asn">, Headers:
+{
+  Authorization: Bearer fdasfdsafsd50Hz!fdasfdsafdsaf.fdasfdsafdsafdsafdsafsdaf
+  Accept: application/json
+  Content-Type: application/json; charset=utf-8
+  Content-Length: 972
+}}
+```
+
+A response is given with a status code and a phrase.
