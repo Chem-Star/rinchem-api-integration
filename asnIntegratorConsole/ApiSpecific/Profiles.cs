@@ -81,13 +81,14 @@ namespace asnIntegratorConsole
         {
             int i = 1;
             String profName = profile.ProfileName;
-            while (findProfile(profName) != null)
+            if (findProfile(profName) != null)
             {
-                profName = profile.ProfileName + "_" + i;
-                i++;
+                deleteProfile(profName);
+                //profName = profile.ProfileName + "_" + i;
+                //i++;
             }
 
-            profile.ProfileName = profName;
+                profile.ProfileName = profName;
             PROFILES.Add(profile);
             ConsoleLogger.log("Added Profile");
             saveProfiles();
@@ -122,11 +123,13 @@ namespace asnIntegratorConsole
         public String ConsumerSecret    { get; set; }
         public Boolean IsSandboxUser    { get; set; }
 
+        public List<LoaderInfo> CustomFields { get; set; }
+
         public Profile()
         {
 
         }
-        public Profile(string profile_name, string username, string consumer_key, string consumer_secret, string security_token, Boolean is_sandbox_user)
+        public Profile(string profile_name, string username, string consumer_key, string consumer_secret, string security_token, Boolean is_sandbox_user, List<LoaderInfo> customFields)
         {
             this.ProfileName = profile_name;
             this.Username = username;
@@ -134,7 +137,13 @@ namespace asnIntegratorConsole
             this.ConsumerSecret = consumer_secret;
             this.SecurityToken = security_token;
             this.IsSandboxUser = is_sandbox_user;
+            this.CustomFields = customFields;
         }
     }
 
+    class LoaderInfo
+    {
+        public String DataLoaderName { get; set; }
+        public List<Field> CustomFields { get; set; }
+    }
 }

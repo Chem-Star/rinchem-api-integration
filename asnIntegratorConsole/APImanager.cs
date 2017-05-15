@@ -12,7 +12,7 @@ namespace asnIntegratorConsole
     /// </summary>
     class APImanager
     {
-        private List<DataLoader> dataLoaders = new List<DataLoader>() { new RinchemJsonLoader(), new RinchemExcelLoader() };
+        private List<DataLoader> dataLoaders = new List<DataLoader>() { new RinchemExcelLoader(), new RinchemJsonLoader() };
 
         private Profiles profiles { get; set; }                     // Contains all prior saved Profiles
         private Credentials credentials { get; set; }               // The login details used to connect to SalesForce

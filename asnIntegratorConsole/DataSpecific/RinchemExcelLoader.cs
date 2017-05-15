@@ -13,7 +13,7 @@ namespace asnIntegratorConsole
     class RinchemExcelLoader : DataLoader
     {
         Field dbLocation = new Field() { Name = "FileLocation", Value= "C:/Users/jdenning/Desktop/ASN_MasterFile.xlsx" };
-        Field shipID = new Field() { Name = "Ship_ID", Value = "154606" };
+        Field shipID = new Field() { Name = "Ship_ID", Value = "" };
 
         List<List<String>> rawData;
 
@@ -157,7 +157,7 @@ namespace asnIntegratorConsole
             asn.Message_Id__c                 = "";
             asn.Date_ASN_Sent__c                = getDateItem( 1, "Date"                       );
             asn.Supplier_Name__c                = getStringItem( 1, "Sup_Name"                   );
-            asn.Rinchem_Supplier_Id__c        = "MAL";
+            asn.Rinchem_Supplier_Id__c          = getStringItem(1, "Origin_ID");
             asn.ASN_Recipient_Name__c           = getStringItem( 1, "ASN_Recpt_ #"               );
             asn.ASN_Recipient_Id__c             = getStringItem( 1, "ASN_Recpt_ID"               );
             asn.Template_Version__c             = getStringItem( 1, "Templt_Ver"                 );

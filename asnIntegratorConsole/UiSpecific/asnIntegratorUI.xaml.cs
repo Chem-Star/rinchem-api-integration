@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -14,6 +15,13 @@ namespace asnIntegratorConsole
     public partial class asnIntegratorUI : Window
     {
         APImanager apiManager;
+
+        const int TEST_CREDENTIALS = 1111;
+        const int TEST_LOAD_DATA = 1112;
+        const int TEST_CONVERT_DATA = 1113;
+        const int TEST_API_CALL = 1114;
+        const int TEST_ALL = 1115;
+
 
         public asnIntegratorUI()
         {
@@ -52,6 +60,9 @@ namespace asnIntegratorConsole
 
             Button TestDataConvertButton = this.FindName("TestDataReformatButton") as Button;
             TestDataConvertButton.Background = new SolidColorBrush(color);
+
+            Button TestApiSetup = this.FindName("TestAPISetupButton") as Button;
+            TestApiSetup.Background = new SolidColorBrush(color);
         }
 
         //Updates the credentials in the apiManager so the SalesForceConnection can use them
@@ -71,6 +82,10 @@ namespace asnIntegratorConsole
         ////////////////////////////////////////////////////////////
         //// Button Actions
         ////////////////////////////////////////////////////////////
+        private void setButtonColor(Button button)
+        {
+
+        }
 
         //Action to take when the Test Credentials button is clicked
         private async void test_credentails_click(object sender, RoutedEventArgs e)
@@ -171,17 +186,30 @@ namespace asnIntegratorConsole
             PasswordBox UserPassword = this.FindName("Password") as PasswordBox;
             CheckBox IsSandbox = this.FindName("IsSandbox") as CheckBox;
 
+            List<DataLoader> loaders = apiManager.getDataLoaders();
+            List<LoaderInfo> loadersInfo = new List<LoaderInfo>();
+
+            loaders.ForEach(loader =>
+            {
+                LoaderInfo loaderInfo = new LoaderInfo();
+                loaderInfo.DataLoaderName = loader.GetType().ToString();
+                loaderInfo.CustomFields = loader.GetCustomFields();
+                loadersInfo.Add(loaderInfo);
+            });
+
             Profile profile = new Profile(ProfileName.Text,
                                                 UserName.Text,
                                                 ConsumerKey.Text,
                                                 ConsumerSecret.Text,
                                                 SecurityToken.Text,
-                                                IsSandbox.IsChecked ?? true);
+                                                IsSandbox.IsChecked ?? true,
+                                                loadersInfo);
             apiManager.saveProfile( profile );
 
             ComboBox dd = this.FindName("LoadProfileDD") as ComboBox;
             on_init_load_profile(dd, null);
             dd.SelectedIndex = apiManager.getProfiles().FindIndex( v => v.ProfileName == profile.ProfileName);
+            on_new_profile_selected(dd, null);
             UpdateLayout();
         }
 
@@ -220,8 +248,12 @@ namespace asnIntegratorConsole
                 ComboBox dd = this.FindName("LoadProfileDD") as ComboBox;
                 on_init_load_profile(dd, null);
                 UpdateLayout();
-            }
 
+                Configuration oConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                oConfig.AppSettings.Settings["ProfilesFilePath"].Value = filename;
+                oConfig.Save(ConfigurationSaveMode.Full);
+                ConfigurationManager.RefreshSection("appSettings");
+            }
         }
 
         //Action to take when the LoadProfile dropdown is loaded initially
@@ -267,7 +299,8 @@ namespace asnIntegratorConsole
                 ConsumerSecretBox.Text = profile.ConsumerSecret;
                 SecurityTokenBox.Text = profile.SecurityToken;
                 IsSandbox.IsChecked = profile.IsSandboxUser;
-            } else
+            }
+            else
             {
                 ProfileNameBox.Text = "";
                 UserNameBox.Text = "";
@@ -277,6 +310,9 @@ namespace asnIntegratorConsole
                 IsSandbox.IsChecked = true;
             }
             UserPasswordBox.Password = "";
+
+            ComboBox loadDataLoaderDD = this.FindName("LoadDataLoaderDD") as ComboBox;
+            on_init_load_data_loader(loadDataLoaderDD, null);
 
             resetLoginDependentButtons();
         }
@@ -288,9 +324,33 @@ namespace asnIntegratorConsole
             // ... A List.
             List<string> data = new List<string>();
 
-            apiManager.getDataLoaders().ForEach(x =>
+            TextBox ProfileNameBox = this.FindName("ProfileName") as TextBox;
+            Profile profile = apiManager.getProfile(ProfileNameBox.Text);
+            apiManager.getDataLoaders().ForEach(loader =>
                 {
-                    data.Add(x.GetType().ToString());
+                    data.Add(loader.GetType().ToString());
+
+                    LoaderInfo loaderInfo = profile.CustomFields.Find(customField => customField.DataLoaderName == loader.GetType().ToString());
+                    if (loaderInfo == null) return;
+
+                    loaderInfo.CustomFields.ForEach(loaderInfoField =>
+                    {
+                        IEnumerator<Field> loaderFields = loader.GetCustomFields().GetEnumerator();
+
+                        loaderFields.MoveNext();
+                        Field loaderField = loaderFields.Current;
+                        while (loaderField != null && loaderField.Name != loaderInfoField.Name)
+                        {
+                            loaderFields.MoveNext();
+                            loaderField = loaderFields.Current;
+                        }
+                        if (loaderField == null)
+                        {
+                            ConsoleLogger.log("Couldn't find the field " + loaderInfoField.Name);
+                            return;
+                        }
+                        loaderField.Value = loaderInfoField.Value;
+                    });
                 }
             );
 
@@ -298,6 +358,9 @@ namespace asnIntegratorConsole
             var comboBox = sender as ComboBox;
             comboBox.ItemsSource = data;
             comboBox.SelectedIndex = 0;
+
+            on_new_data_loader_selected(comboBox, null);
+            UpdateLayout();
         }
         //Action to take when a new Data Loader is selected
         private void on_new_data_loader_selected(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
