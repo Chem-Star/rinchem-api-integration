@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using asnIntegratorConsole.UiSpecific;
+using RinchemApiIntegrationConsole.UiSpecific;
 
-namespace asnIntegratorConsole
+namespace RinchemApiIntegrationConsole
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///  Simple structural class to hold credential data that is necessary to login to Salesforce.               ///

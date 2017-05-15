@@ -1,4 +1,4 @@
-﻿using asnIntegratorConsole.UiSpecific;
+﻿using RinchemApiIntegrationConsole.UiSpecific;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;       //Microsoft Excel 14 object in references-> COM tab
 
-namespace asnIntegratorConsole
+namespace RinchemApiIntegrationConsole
 {
     class RinchemExcelLoader : DataLoader
     {

@@ -1,4 +1,4 @@
-﻿using asnIntegratorConsole.UiSpecific;
+﻿using RinchemApiIntegrationConsole.UiSpecific;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace asnIntegratorConsole
+namespace RinchemApiIntegrationConsole
 {
     /// <summary>
     /// Interaction logic for asnIntegratorConsole.xaml
@@ -330,6 +330,7 @@ namespace asnIntegratorConsole
                 {
                     data.Add(loader.GetType().ToString());
 
+                    if (profile == null || profile.CustomFields == null) return;
                     LoaderInfo loaderInfo = profile.CustomFields.Find(customField => customField.DataLoaderName == loader.GetType().ToString());
                     if (loaderInfo == null) return;
 

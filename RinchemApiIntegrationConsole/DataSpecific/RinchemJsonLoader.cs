@@ -1,11 +1,11 @@
-﻿using asnIntegratorConsole.UiSpecific;
+﻿using RinchemApiIntegrationConsole.UiSpecific;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace asnIntegratorConsole
+namespace RinchemApiIntegrationConsole
 {
     // Simple implementation of the data loader
     class RinchemJsonLoader : DataLoader

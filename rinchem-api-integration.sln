@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rinchem-api-integration-console", "asnIntegratorConsole\rinchem-api-integration-console.csproj", "{1E010256-47F6-47A4-976A-B30F3C81B006}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rinchem-api-integration-console", "RinchemApiIntegrationConsole\rinchem-api-integration-console.csproj", "{1E010256-47F6-47A4-976A-B30F3C81B006}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

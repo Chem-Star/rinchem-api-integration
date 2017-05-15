@@ -2,150 +2,163 @@
 
 <p align="center">
   <img src="http://www.rinchem.com/images/logo.gif" alt="Slate: API Documentation Generator" width="226">
-  <br>
-  <a href="https://github.com/Chem-Star/asn-integration"><img src="https://travis-ci.org/lord/slate.svg?branch=master" alt="Build Status"></a>
 </p>
 
-<h1 align="center">ASN-Integration documentation for integration to API</h1>
+<h1 align="center">Rinchem API Integration </h1>
+
+
 
 ## Synopsis
 
-We are committed to making the ASN integration straightforward, reliable, and transparent. Over time, we will build a robust platform that will allow you to enter and edit ASNs, review your history, and generate reports. 
-Our technical support staff will guide you through every step of the process.
+Rinchem is committed to making the API integration process straightforward, reliable, and transparent. Over time, we will build a robust platform that will allow you to enter and edit documents, review your history, and generate reports. APIs will be available for Advance Shipping Notices (ASN), Confirmation of Inbound Receipts, Outbound Order Releases, Outbound Order Ship Confirmations, and Inventory Reconciliation. Supplementary documents will be available for each document/API type.
 
-## Motivation
+Our technical support staff will be available to guide you through every step of the process. If you have only stumbled upon this page and don't have a Rinchem contact, please send an email to 'jdenning@rinchem.com'.
 
-The ASN provides order and shipment information in one electronic transaction sent from the shipper to the receiver. While the ASN is similar to a Bill of Lading (BOL) and even carries much of the same information, it has a different function. The BOL is meant to accompany a shipment along its path. An ASN is intended to provide information in advance of the shipment arriving at its destination.
-The value of the ASN comes from receiving it prior to the actual shipment. Rinchem provides a standardized data integration method to ensure easy, efficient, and accurate data exchange. 
+If you are looking to get started with the C# source code, please check out the readme in the nested **RinchemApiIntegrationConsole** folder above. If you would like more specific information about the API calls, see the **API Calls** Section directly below this. If you would like to download the pre-built API Integration Console App, check out the **Installation** further down this page.
 
-----------
-## Installation
-If you are looking to get started with the source code, please check out the readme in the nested **asnIntegratorConsole** folder above.
+## API Calls
 
-If you are just getting started and simply want to download the pre-built console, you may do so by downloading the RinchemAsnIntegrator.zip file (click on the file, then on the subsequent page there is a button to 'Download'). Once downloaded, extract the zip file to your desired location. Within the folder, the executable is named **'asnIntegratorConsole.exe'**; if you launch this the empty console will open. Also, within the folder is a nested folder named **'Development'** within this there is an example **'profiles.json'** file and an example **'CustomRestPayload.json'** file. 
-If you would like the console to be populated initially, you may move the 'Development' folder to 'C:/', otherwise you may point the UI to a different location by clicking the **Set 'profiles.json' Location"** button at the top of the User Interface.
+### Authentication
+Prior to making any API calls, you will need to retrieve an AccessToken and an InstanceUrl from Salesforce. In order to retrieve these, an HTTP 'POST' request should be made to your desired **Authentication Url** (see below). In the request body, then, it is necessary to provide key value pairs, corresponding to your consumer key, consumer secret, username, password and security token. The **key -> value** mapping is shown below.
 
-
-## Interface
-The interface is broken down into 5 sections so that the customer path to integration is minimized and itemizable. The sections consist of Credentials, Load Data, Convert Data, API Setup and API Call.
-
-### Credentials
-Connecting to Salesforce environment is the first step to sending ASN data.
-Connecting to the environment requires some configuration items that your Rinchem Integration Specialist will provide.  For both Sandbox (Test) and Production (Live) Environments:
-
-An **account name** and **password** will be assigned to your company for ASN and other integration methods. 
-In addition to account name and password,  a **Consumer Key**, **Consumer Secret**, and **Security Token** will also be provided by your Integration Specialist. 
-
-These should be entered into the corresponding fields in the credentials section of the GUI. (If you don't see the fields, please click the 'Edit Profile' button) After, you have entered your credential information, it is suggested that you 'Save' it. This prevents you from needing to re-enter data the next time that you use the console. For security reasons, the password is not saved, and will have to be entered each time.
-
-
-### Data Retrieval
-The two data sections are where the customer will have to implement their own solution. Data retrieval consists of connecting to the current raw data source that needs to be sent through the API. It should also verify that the expected data format was pulled in. 
-When the desired data loader is selected from the drop down, any specified 'custom fields' will be displayed below it. Currently, the only built in solution is the RinchemJsonLoader, to use this, you will need to provide the location of a .json file that is already in the proper ASN format.
-
-### Data Conversion
-Before the API call can be sent, the data must be in a very specific format. During this call the user must convert their raw data object, to the proper AsnObject format. The system then verifies that all required fields are inputed and subsequently serializes the AsnObject into a json string that can then be transmitted in the API call.
-
-#### AsnObject
-The AsnObject is a simple class following the ASN json format.
+#### Authentication URLs:
+Sandbox (Test)
 ```
+https://test.salesforce.com/services/oauth2/token
+```
+Production (Live)
+```
+https://login.salesforce.com/services/oauth2/token
+```
+#### Authentication Key -> Value Mapping
+Please note that **key -> value** pairs are not json and sending this as a json body will not work.
+<pre>
+<code><b><i>Key							Value</i></b>
+"grant_type"		->		"password"
+"client_id"			->		your_consumer_key
+"client_secret"		->		your_consumer_secret
+"username"			->		your_username
+"password"			->		<b>your_password + your_security_token</b>
+</code></pre>
+
+After sending the authentication request, salesforce will return a json response. If the credentials are incorrect, the response will be: 
+```json
 {
-	"rqst": {
-		"asn": {
-			"Name": "",
-			"Action__c": "xxx",
-			"Message_Id__c": "xxx",
-			"Date_ASN_Sent__c": "xxxx-xx-xx",
-			"Supplier_Name__c": "xxx",
-			"Rinchem_Supplier_Id__c": "xxx",
-			"ASN_Recipient_Name__c": "xxxx",
-			"ASN_Recipient_Id__c": "xxxxx",
-			"Template_Version__c": "xx.xx",
-			"Estimated_Ship_Date__c": "xxxx-xx-xx",
-			"Estimated_Arrival_Date__c": "xxxx-xx-xx",
-			"Shipment_Id__c": "xxx xxxxxx",
-			"BOL_Number__c": "",
-			"Ship_From_Supplier__c": "xxx",
-			"Order_Type__c": "xx",
-			"Order_Number__c": "",
-			"Origin_Id__c": "xxx",
-			"Origin_Street_Address__c": "xxx Rinchem Dr.",
-			"Origin_City__c": "City",
-			"Origin_State__c": "State",
-			"Origin_Postal_Code__c": "123445",
-			"Origin_Country__c": "USA",
-			"Destination_Name__c": "",
-			"Destination_Warehouse_Code__c": "xx",
-			"Destination_Address__c": "1023 address ave nw",
-			"Destination_City__c": "city",
-			"Destination_State__c": "state",
-			"Destination_Postal_Code__c": "123445",
-			"Destination_Country__c": "USA",
-			"Carrier_Id__c": "ddd",
-			"Carrier_Name__c": "xxx",
-			"Purchase_Order_Number__c": "xxx",
-			"Product_Owner_Id__c": "xxx"
-		},
-		"lineItems": [{
-			"Name": "1",
-			"Vendor_Part_Number__c": "dfdasf_part",
-			"Product_Description__c": "This is an example line item",
-			"Product_Lot_Number__c": "213123",
-			"Product_Expiration_Date__c": "2312-23-01",
-			"Quantity__c": "343290",
-			"Unit_of_Measure__c": "DRUM",
-			"Hold_Code__c": "",
-			"Serial_Number__c": ""
-		},
-		{
-			"Name": "2",
-			"Vendor_Part_Number__c": "dfdasf_part",
-			"Product_Description__c": "This is an example line item",
-			"Product_Lot_Number__c": "213123",
-			"Product_Expiration_Date__c": "2312-23-01",
-			"Quantity__c": "343290",
-			"Unit_of_Measure__c": "DRUM",
-			"Hold_Code__c": "",
-			"Serial_Number__c": ""
-		}]
-	}
+  "error": "invalid_grant",
+  "error_description": "authentication failure"
 }
 ```
-#### Required Fields:
-If any of the following required fields are missing, the reformat will fail and the guilty fields will be listed in the **Log Output**.
-```
+If the credentials are correct and the call is made successfully, the response will be something like:
+```json
 {
-	"rqst": {
-		"asn": {
-			"Message_Id__c": "xxx",
-			"Date_ASN_Sent__c": "xxxx-xx-xx",
-			"Supplier_Name__c": "xxx",
-			"Rinchem_Supplier_Id__c": "xxx",
-			"ASN_Recipient_Name__c": "xxxx",
-			"ASN_Recipient_Id__c": "xxxxx",
-			"Template_Version__c": "xx.xx",
-			"Estimated_Ship_Date__c": "xxxx-xx-xx",
-			"Estimated_Arrival_Date__c": "xxxx-xx-xx",
-			"Shipment_Id__c": "xxx xxxxxx",
-			"Order_Type__c": "xx",
-			"Origin_Id__c": "xxx",
-			"Destination_Warehouse_Code__c": "xx",
-			"Carrier_Id__c": "ddd",
-			"Carrier_Name__c": "xxx",
-			"Purchase_Order_Number__c": "xxx",
-			"Product_Owner_Id__c": "xxx"
-		},
-		"lineItems": [{
-			"Name": "1",
-			"Vendor_Part_Number__c": "dfdasf_part",
-			"Product_Description__c": "This is an example line item",
-			"Quantity__c": "343290",
-			"Unit_of_Measure__c": "DRUM"
-		}]
-	}
+  "access_token": "00Dn000000093KQ!ARIAQGlBxv3YTjEomig8JcfIXwWjO8eDp_xQDo8trckJK33b.o85iU8bktoPMLfe6gby_o.7bkXoUESjn3qVswvmlzBJD4ek",
+  "instance_url": "https://rinchem--CSPortalQA.cs30.my.salesforce.com",
+  "id": "https://test.salesforce.com/id/00Dn000000093KQEAY/005n0000002M68dAAC",
+  "token_type": "Bearer",
+  "issued_at": "1494884052218",
+  "signature": "ivZIqu5EdUGmmAkL964t4YEJ164X08IC97ok7yjKmok="
 }
 ```
+From this response, take special note of the access_token and the instance_url as these will be needed to make the actual API Call. 
+The access_token and instance_url will remain valid until your salesforce session times out. Salesforce timeouts default to 2 hours, though this can be changed in your org settings.
+
+### Your Data
+Depending on which API you are trying to use, your data will be formatted differently. For more information about each data format, see the corresponding **README_X.md** file above. Each call requires a JSON body, however, the fields within the body vary. A C# class has been implemented for each API object type, showing the object equivelant of the json. Using a json library, such as Newtonsoft.Json, these objects may be serialized to create the JSON body, also, the JSON bodies may be deserialized to build the objects. The classes also provide some field validation prior to making the call. Rinchem has provide a few examples for how to read in raw data and format the objects. Please see the **README** within the nested **RinchemApiIntegrationConsole** folder.
+
+If you have issues converting your data to an appropriate object, please let your Rinchem contact know.
+
+### The Rinchem API Call
+Once you have retrieved the access_token and instance_url and you have created your json body, you are ready to call the Rinchem API. The format of the API call is shown below.
+```json
+{
+    "Method": your_verb, 
+    "RequestUri": your_instance_url + your_api_suffix, 
+    "Version": 1.1, 
+    "Headers":
+        {
+            "Authorization": "Bearer " + your_access_token,
+            "Accept": "application/json",
+            "Content-Type": "application/json; charset=utf-8",
+            "Content-Length": 972
+        },
+
+    "Content": your_json_body
+}
+```
+POST and PATCH should be the primary verbs used, though, please visit the specific API READMEs to see which method verbs (POST, PATCH, GET, PUT) are accepted for each API. The other items have been covered priorly.
+
+#### API Suffixes
+Depending on your company's needs, you may be assigned a custom suffix. If you are using the generic APIs then their suffixes are as follows:
+```
+Advance Shipping Notices (ASN)			-> 		"/services/apexrest/v1/ASN__c"
+Confirmation of Inbound Receipt 		-> 		"/services/apexrest/v1/XXX__c"
+Outbound Order Release 					->		"/services/apexrest/v1/YYY_c"
+Outbound Order Ship Confirmation 	 	->		"/services/apexrest/v1/ZZZ__c"
+Inventory Reconciliation 				->		"/services/apexrest/v1/QQQ__c"
+```
+
+After calling the API, a json response is returned with a status code and a phrase.
+
+If a field item isn't valid or if their is a duplicate item an error will be returned along the likes of this:
+```
+{StatusCode: 400, ReasonPhrase: 'Bad Request', Version: 1.1, Content: System.Net.Http.StreamContent, Headers:
+{
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Sforce-Limit-Info: api-usage=674/5000000
+  Transfer-Encoding: chunked
+  Date: Wed, 08 Feb 2017 19:02:28 GMT
+  Set-Cookie: BrowserId=sXXZUL6JRu6h-PKrICyowg;Path=/;Domain=.salesforce.com;Expires=Sun, 09-Apr-2017 19:02:28 GMT
+  Content-Type: application/json; charset=UTF-8
+  Expires: Thu, 01 Jan 1970 00:00:00 GMT
+}}
+
+"[{\"message\":\"duplicate value found: Message_Id__c duplicates value on record with id: a1q3C000000AqUp\",\"errorCode\":\"DUPLICATE_VALUE\",\"fields\":[]}]"
+
+```
+
+If the authentication tokens are still valid and the json content body is valid a response will be returned along the likes of this:
+```json
+{
+	"status":"Success",
+    "message":"Your request has been imported successfully", 
+    your_object_type : your_object_sent}
+```
+This includes the status, a message, and the content that was originally sent to the api.
+
+**Congrats! You have successfully made an API call to the Rinchem Salesforce server.**
 
 
-### API Call
-The API Call serializes all of the pre-entered and converted data into one json strong string and then sends it over an HTTPclient to the Salesorce server, where the API receives and handles the package.
+## Pre-built Console Installation
+Rinchem has built a small console to aid in your integration pursuit, it can be used as-is to test your credentials in a remote call, as well as  to send test API Calls. If desired, using C#, this can built upon to function as a full blown integration solution. If this is your intent, please see the README in the nested RinchemApiIntegrationConsole folder.
+<img src="https://cloud.githubusercontent.com/assets/25616817/26076136/f38b2b0a-3974-11e7-9102-b213d3e2f156.PNG" alt="">
+If you are just getting started and simply want to download the pre-built console, you may do so by downloading the RinchemAsnIntegrator.zip file (click on the file, then on the subsequent page there is a button to 'Download'). Once downloaded:
+1. Extract the zip file to your desired location. 
+2. Within the folder, the executable is named **'RinchemApiIntegrationConsole.exe'**
+	- Running this will open the empty console. 
+	- Please note that there is also a file called 'RinchemApiIntegrationConsole.exe.config', if your file explorer hides extensions you may open this by mistake.
+3. Also, within the folder is a nested folder named **'Development'** which contains an example **'profiles.json'** file and an example **'CustomRestPayload.json'** file. 
+	- On the console, click the **Set 'profiles.json' Location** button at the top of the User Interface. Navigate to the aforementioned 'Development/profiles.json' file and click 'open'.
+4. Fill in your personal credentials and click **save profile** (in the future you'll only have to enter your password).
+	- If you are unsure of your credentials, see the **My Credentials** section below.
+5. Click **Test Credentials** to see if Salesforce will accept your credentials and return a valid authentication token.
+6. In the data loader section, select the RinchemApiIntegrationConsole.RinchemJsonLoader.
+7. In the FileLocation field, input the path to the aforementioned 'Development/profiles.json' file.
+8. Click **Test Retrieval** to see if the raw data is pulled in properly.
+9. Click **Test Reformat** to see if the raw data is converted to an ASN object properly.
+10. Click **Test API Call** to send the API request and see if a successful response is received.
+
+If any errors are encountered during the process they will show up in the **Log Output** box. If the API Call is successful the json body that was sent to the API will be returned.
+
+### My Credentials
+
+An **Account Name** and **Password** will be assigned to your company for ASN and other integration methods. In addition to account name and password,  a **Consumer Key**, and **Consumer Secret** will also be provided by your Integration Specialist. 
+
+You will have to manually retrieve your **Security Token** from salesforce. To do so:
+1. In a browser, login to **salesforce.com**
+2. In the top right corner click on your username and then select **My Settings**
+3. On the left bar, click **Personal**
+4. Click **Reset My Security Token**
+5. In the main page, click the button **Reset My Security Token**
+6. Check your email, you should have received an email from Salesforce with your security token.
+
+Your security token will be valid until one of your other credentials is changed, or your salesforce environment is changed.

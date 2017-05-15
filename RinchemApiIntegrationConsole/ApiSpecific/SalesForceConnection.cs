@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Text;
-using asnIntegratorConsole.UiSpecific;
+using RinchemApiIntegrationConsole.UiSpecific;
 using System.Configuration;
 using System.Collections.Generic;
 
-namespace asnIntegratorConsole
+namespace RinchemApiIntegrationConsole
 {
     internal class SalesForceConnection
     {

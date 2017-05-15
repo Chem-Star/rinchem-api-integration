@@ -1,4 +1,4 @@
-﻿using asnIntegratorConsole.UiSpecific;
+﻿using RinchemApiIntegrationConsole.UiSpecific;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace asnIntegratorConsole
+namespace RinchemApiIntegrationConsole
 {
     // Class to load, update, store and delete Profiles. 
     // Profiles are essentially Credentials, however, a profile does not store a password, while credentials do.

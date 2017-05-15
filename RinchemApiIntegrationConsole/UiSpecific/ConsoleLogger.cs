@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace asnIntegratorConsole.UiSpecific
+namespace RinchemApiIntegrationConsole.UiSpecific
 {
     static class ConsoleLogger
     {

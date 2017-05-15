@@ -1,10 +1,10 @@
-﻿using asnIntegratorConsole.UiSpecific;
+﻿using RinchemApiIntegrationConsole.UiSpecific;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
 
-namespace asnIntegratorConsole
+namespace RinchemApiIntegrationConsole
 {
     /// <summary>
     /// Bridgeing class between the UI and functional calls

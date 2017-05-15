@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace asnIntegratorConsole.Properties
+namespace RinchemApiIntegrationConsole.Properties
 {
 
 

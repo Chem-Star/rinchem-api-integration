@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace asnIntegratorConsole
+namespace RinchemApiIntegrationConsole
 {
     // Simple interface that customers must implement to use the ASN Integrator
     interface DataLoader
