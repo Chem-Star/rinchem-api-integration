@@ -1,0 +1,61 @@
+{
+	"rqst": {
+		"asn": {
+			"Name": "",
+			"Action__c": "",
+			"Message_Id__c": "",
+			"Date_ASN_Sent__c": "2017-04-20",
+			"Supplier_Name__c": "AVANTOR (MALLINCKRODT)",
+			"Rinchem_Supplier_Id__c": "MAL",
+			"ASN_Recipient_Name__c": "Rinchem",
+			"ASN_Recipient_Id__c": "11",
+			"Template_Version__c": "1.0",
+			"Estimated_Ship_Date__c": "2017-03-24",
+			"Estimated_Arrival_Date__c": "2017-03-28",
+			"Shipment_Id__c": "153329",
+			"BOL_Number__c": "153329",
+			"Ship_From_Supplier__c": "MAL",
+			"Order_Type__c": "PO",
+			"Order_Number__c": "153329",
+			"Origin_Id__c": "5555",
+			"Origin_Street_Address__c": "600 North Broad Street",
+			"Origin_City__c": "Phillipsburg",
+			"Origin_State__c": "NJ",
+			"Origin_Postal_Code__c": "08865",
+			"Origin_Country__c": "USA",
+			"Destination_Name__c": "Albuquerque",
+			"Destination_Warehouse_Code__c": "11",
+			"Destination_Address__c": "6139 Edit Blvd. NE",
+			"Destination_City__c": "Albuquerque",
+			"Destination_State__c": "NM",
+			"Destination_Postal_Code__c": "87107",
+			"Destination_Country__c": "USA",
+			"Carrier_Id__c": "CGL",
+			"Carrier_Name__c": "CGL",
+			"Purchase_Order_Number__c": "153329",
+			"Product_Owner_Id__c": "INTEL"
+		},
+		"lineItems": [{
+			"Name": "1",
+			"Vendor_Part_Number__c": "9616-54",
+			"Product_Description__c": "NITRIC ACID 70%, MOS",
+			"Product_Lot_Number__c": "0000072429",
+			"Product_Expiration_Date__c": "2018-03-01",
+			"Quantity__c": "4",
+			"Unit_of_Measure__c": "Drum",
+			"Hold_Code__c": "",
+			"Serial_Number__c": ""
+		},
+		{
+			"Name": "2",
+			"Vendor_Part_Number__c": "5800-05",
+			"Product_Description__c": "HYDROCHLORIC ACID BOTTLE",
+			"Product_Lot_Number__c": "0000105271",
+			"Product_Expiration_Date__c": "2019-02-01",
+			"Quantity__c": "12",
+			"Unit_of_Measure__c": "Bottle",
+			"Hold_Code__c": "",
+			"Serial_Number__c": ""
+		}]
+	}
+}

@@ -104,7 +104,7 @@ namespace RinchemApiIntegrationConsole
             int colCount = xlRange.Columns.Count;
 
             // Read each cell in the row and add it to the columns array
-            for (int j = 1; j < colCount; j++)
+            for (int j = 1; j <= colCount; j++)
             { 
                 if (xlRange.Cells[i, j] != null && xlRange.Cells[i, j].Value2 != null)
                 {
@@ -195,6 +195,7 @@ namespace RinchemApiIntegrationConsole
             for(int i=1; i<rawData.Count; i++)
             {
                 LineItems lineItem = new LineItems();
+                ConsoleLogger.log("boop" + getStringItem(i, "Hold_Code"));
 
                 lineItem.Name                               = getStringItem( i, "Line_Item_#"               );
                 lineItem.Vendor_Part_Number__c              = getStringItem( i, "Vendor_PN"                 );
