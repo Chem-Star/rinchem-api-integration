@@ -11,25 +11,25 @@
 The Advance Shipping Notice, ASN, provides order and shipment information in one electronic transaction sent from the shipper to the receiver. While the ASN is similar to a Bill of Lading (BOL) and even carries much of the same information, it has a different function. The BOL is meant to accompany a shipment along its path. An ASN is intended to provide information in advance of the shipment arriving at its destination.
 The value of the ASN comes from receiving it prior to the actual shipment. Rinchem provides a standardized data integration method to ensure easy, efficient, and accurate data exchange. 
 
-###API URLs:
+## Calling The ASN API
+If you have not done so already, please review the documentation in the main README.md as that walks you through the process to get the necessary **instance_url** and **authentication_token**, as well as how to format the call once you have the correct body payload. 
 
-**Sandbox (Test)**
+#### ASN Suffix:
+Append this to your Salesforce **instance_url**.
 ```
-https://salesforceinstance.rinchem.com/services/apexrest/v1/ASN__c
-```
-**Production (Live)**
-
-```
-https://salesforceinstance.rinchem.com/services/apexrest/v1/ASN__c
+/services/apexrest/v1/ASN__c
 ```
 
-Depending on authentication, a unique URI is created for sending the request/
-```
-https://rinchem--ASNQA.cs60.my.salesforce.com/services/data/v37.0/sobjects/ASN__c
-```
+#### ASN Accepted HTTP Verbs:
+<Table>
+<tr><th>Verb</th><th>Actions</th></tr>
+<tr><td>POST</td><td>Used for adding a new ASN</td></tr>
+<tr><td>PATCH</td><td>Used to Update or Cancel an ASN</td></tr>
+</Table>
+
 
 ### Body Payload: 
-The API expects a body payload with a specific json format (see below). In order to make this more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
+For a new ASN request the API expects a body payload with the following json format. In order to make this more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
 
 ```
 {
@@ -95,6 +95,7 @@ The API expects a body payload with a specific json format (see below). In order
 }
 ```
 #### Required Fields:
+Requests will not be accepted into the WMS if any of these fields have improper fields. The following sections outline accepted values for some of the more specialized fields such as unit of measure and hold codes.
 ```
 {
 	"rqst": {
@@ -129,55 +130,84 @@ The API expects a body payload with a specific json format (see below). In order
 ```
 
 
-### ASN integration supports  these HTTP methods:
-```
-POST 
-PATCH
-```
+### Accepted Carrier IDs
+For a full list of Carrier IDs please see the attached excel sheet **AcceptedValues.xlsx**, under the *Carrier_Id* tab.
+<Table>
+<tr><th>Warehouse</th><th>Carrier Service</th><th>Carrier Service Name</th></tr>
+<tr> <td>11</td> <td>RINCHEM</td> <td>Rinchem</td> </tr>
+<tr> <td>11</td> <td>CGL</td> <td>CGL</td> </tr>
+<tr> <td>11</td> <td>FRGHTWORKS</td> <td>FREIGHTWORKS</td> </tr>
+</Table>
 
-A request may then be sent to our API with method and content. The RequestUri is composed with the InstanceUrl (returned by Salesforce during credential authorization) and then appends the desired API url. In the Headers section, 'Authorization' is composed of the text, 'Bearer ' and then appends the AccessToken (returned by Salesforce during credential authorization). 'Content' is composed of the JSON body mentioned above.
-```
-{
-	Method: POST, 
-    RequestUri: 'https://rinchem--asnqa.cs60.my.salesforce.com/services/data/v37.0/sobjects/ASN__c', 
-    Version: 1.1, 
-    Headers:
-		{
-  			Authorization: Bearer fdasfdsafsd50Hz!fdasfdsafdsaf.fdasfdsafdsafdsafdsafsdaf
-  			Accept: application/json
-  			Content-Type: application/json; charset=utf-8
-  			Content-Length: 972
-		},
+### Accepted Warehouse IDs
+For a full list of Warehouse IDs please see the attached excel sheet **AcceptedValues.xlsx**, under the *Warehouse_Code* tab.
 
-    Content: <"the ASN json body goes here">
-}
-```
+<Table>
+<tr><th>Code</th><th>Name</th><th>Address</th><th>City</th><th>State</th><th>Zip</th><th>Country</th></tr>
+<tr>
+<td>14</td> <td>Chandler</td> <td>6843 W. Frye Rd.</td> <td>Chandler</td> <td>AZ</td> <td>85226</td> <td>USA</td> 
+</tr>
 
-A response is then returned with a status code and a phrase.
+</Table>
 
-###Types of Responses:
+### Accepted Hold Codes
+Also available in the AcceptedValues excel sheet, under the *Hold_Code* tab.
+<Table>
+<tr><th>Hold Code</th><th>Description</th><th>Affect Damaged</th></tr>
+<tr> <td>DMG</td>  <td>DAMAGED                              </td> <td>Yes</td> </tr>
+<tr> <td>OH</td>   <td>ON HOLD                              </td> <td>No</td> </tr>
+<tr> <td>RCAL</td> <td>RECALLED PRODUCT                     </td> <td>Yes</td> </tr>
+<tr> <td>REJ</td>  <td>REJECTED PRODUCT                     </td> <td>Yes</td> </tr>
+<tr> <td>RET</td>  <td>RETURNABLE CONTAINER                 </td> <td>No</td> </tr>
+<tr> <td>RSL</td>  <td>RESELL                               </td> <td>Yes</td> </tr>
+<tr> <td>SPCL</td> <td>SPECIAL AUTHORIZATION REQUIRED       </td> <td>Yes</td> </tr>
+<tr> <td>VH</td>   <td>VENDOR HOLD                          </td> <td>No</td> </tr>
+<tr> <td>WST</td>  <td>WASTE                                </td> <td>Yes</td> </tr>
 
- ***Success:***
-```
-{"status":"Success","message":"Your request has been imported successfully"}
-```
-It will also return the ASN body so that you may ensure the data was not corrupted in transit.
+</Table>
+
+### Accepted Units of Measure
+Also available in the AcceptedValues excel sheet, under the *Unit_Of_Measure* tab.
+<Table>
+<tr>
+<td>TOTE</td>
+<td>PAIL</td>
+<td>NOW PAK</td>
+<td>CANISTER</td>
+</tr>
+<tr>
+<td>QUARTZ</td>
+<td>EACH</td>
+<td>CYLINDER</td>
+<td>PACK</td>
+</tr>
+<tr>
+<td>AMPULE</td>
+<td>DIPTUBE</td>
+<td>BAG</td>
+<td>TUBES</td>
+</tr>
+<tr><td>BOX</td>
+<td>JERRICAN</td>
+<td>2LPO</td>
+<td>6 PACK CYL</td>
+</tr>
+<tr>
+<td>BULK SACK</td>
+<td>POUND</td>
+<td>ROLL</td>
+<td>CARTON</td>
+</tr>
+<tr>
+<td>PALLET</td>
+<td>OTHER</td>
+<td>CAGE</td>
+<td>PALLET</td>
+</tr>
+</Table>
 
 
-***Error:***
-```
-{StatusCode: 400, ReasonPhrase: 'Bad Request', Version: 1.1, Content: System.Net.Http.StreamContent, Headers:
-{
-  Strict-Transport-Security: max-age=31536000; includeSubDomains
-  Sforce-Limit-Info: api-usage=674/5000000
-  Transfer-Encoding: chunked
-  Date: Wed, 08 Feb 2017 19:02:28 GMT
-  Set-Cookie: BrowserId=sXXZUL6JRu6h-PKrICyowg;Path=/;Domain=.salesforce.com;Expires=Sun, 09-Apr-2017 19:02:28 GMT
-  Content-Type: application/json; charset=UTF-8
-  Expires: Thu, 01 Jan 1970 00:00:00 GMT
-}}
 
-"[{\"message\":\"duplicate value found: Message_Id__c duplicates value on record with id: a1q3C000000AqUp\",\"errorCode\":\"DUPLICATE_VALUE\",\"fields\":[]}]"
-```
 
-More information about specific errors may be added at a later time. If you do encounter an undocumented error, please don't hesitate to ask your Rinchem contact, or 'jdenning@rinchem.com'.
+# Errors
+Information about specific errors may be added at a later time. If you do encounter an undocumented error, please don't hesitate to ask your Rinchem contact, or 'aseals@rinchem.com'.

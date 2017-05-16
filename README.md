@@ -12,14 +12,14 @@
 
 Rinchem is committed to making the API integration process straightforward, reliable, and transparent. Over time, we will build a robust platform that will allow you to enter and edit documents, review your history, and generate reports. APIs will be available for Advance Shipping Notices (ASN), Confirmation of Inbound Receipts, Outbound Order Releases, Outbound Order Ship Confirmations, and Inventory Reconciliation. Supplementary documents will be available for each document/API type.
 
-Our technical support staff will be available to guide you through every step of the process. If you have only stumbled upon this page and don't have a Rinchem contact, please send an email to 'jdenning@rinchem.com'.
+Our technical support staff will be available to guide you through every step of the process. If you have only stumbled upon this page and don't have a Rinchem contact, please send an email to 'aseals@rinchem.com'.
 
-If you are looking to get started with the C# source code, please check out the readme in the nested **RinchemApiIntegrationConsole** folder above. If you would like more specific information about the API calls, see the **API Calls** Section directly below this. If you would like to download the pre-built API Integration Console App, check out the **Installation** further down this page.
+If you are looking to get started with the C# source code, please check out the readme in the nested **RinchemApiIntegrationConsole** folder above. If you would like more specific information about the API calls, see the **API Calls** Section directly below this. If you would like to download the pre-built API Integration Console App, check out the **Installation** section further down this page.
 
 ## API Calls
 
 ### Authentication
-Prior to making any API calls, you will need to retrieve an AccessToken and an InstanceUrl from Salesforce. In order to retrieve these, an HTTP 'POST' request should be made to your desired **Authentication Url** (see below). In the request body, then, it is necessary to provide key value pairs, corresponding to your consumer key, consumer secret, username, password and security token. The **key -> value** mapping is shown below.
+Prior to making any API calls, you will need to retrieve an AccessToken and an InstanceUrl from Salesforce. In order to retrieve these, an HTTP 'POST' request should be made to your desired **Authentication Url** (see below). Then, in the request body you need to provide key value pairs, corresponding to your consumer key, consumer secret, username, password and security token. The **key -> value** mapping is shown below.
 
 #### Authentication URLs:
 Sandbox (Test)
@@ -30,24 +30,27 @@ Production (Live)
 ```
 https://login.salesforce.com/services/oauth2/token
 ```
-#### Authentication Key -> Value Mapping
-Please note that **key -> value** pairs are not json and sending this as a json body will not work.
-<pre>
-<code><b><i>Key							Value</i></b>
-"grant_type"		->		"password"
-"client_id"			->		your_consumer_key
-"client_secret"		->		your_consumer_secret
-"username"			->		your_username
-"password"			->		<b>your_password + your_security_token</b>
-</code></pre>
+#### Authentication (Key -> Value) Mapping
+Please note that **key -> value** pairs are not pure json and sending this as a json body may not work. If you are unsure of these values, please see the **My Credentials** section at the bottom of this page.
+<table>
+<tr><th>Key</th><th>Value</th></tr>
+<tr><td>"grant_type"	</td><td>"password"				</td></tr>
+<tr><td>"client_id"		</td><td>your_consumer_key		</td></tr>
+<tr><td>"client_secret"	</td><td>your_consumer_secret	</td></tr>
+<tr><td>"username"		</td><td>your_username			</td></tr>
+<tr><td>"password"		</td><td><b>your_password + your_security_token</b></td></tr>
+</table>
 
-After sending the authentication request, salesforce will return a json response. If the credentials are incorrect, the response will be: 
+After sending the authentication request, salesforce will return a json response. 
+
+If the credentials are incorrect, the response will be similar to this: 
 ```json
 {
   "error": "invalid_grant",
   "error_description": "authentication failure"
 }
 ```
+
 If the credentials are correct and the call is made successfully, the response will be something like:
 ```json
 {
@@ -63,39 +66,41 @@ From this response, take special note of the access_token and the instance_url a
 The access_token and instance_url will remain valid until your salesforce session times out. Salesforce timeouts default to 2 hours, though this can be changed in your org settings.
 
 ### Your Data
-Depending on which API you are trying to use, your data will be formatted differently. For more information about each data format, see the corresponding **README_X.md** file above. Each call requires a JSON body, however, the fields within the body vary. A C# class has been implemented for each API object type, showing the object equivelant of the json. Using a json library, such as Newtonsoft.Json, these objects may be serialized to create the JSON body, also, the JSON bodies may be deserialized to build the objects. The classes also provide some field validation prior to making the call. Rinchem has provide a few examples for how to read in raw data and format the objects. Please see the **README** within the nested **RinchemApiIntegrationConsole** folder.
+Depending on which API you are trying to use, your data will be formatted differently. For more information about each data format, see the corresponding **README_X.md** file above. Each call requires a JSON body, however, the fields within the body vary. 
+
+A C# class has been implemented for each API object type, showing the object equivelant of the json. Using a json library, such as Newtonsoft.Json, these objects may be serialized to create the JSON body. The classes also provide some field validation prior to making the call. Rinchem has provided a few examples for how to read in raw data and format the objects. Please see the specific API documentations or the **README** within the nested **RinchemApiIntegrationConsole** folder.
 
 If you have issues converting your data to an appropriate object, please let your Rinchem contact know.
 
 ### The Rinchem API Call
 Once you have retrieved the access_token and instance_url and you have created your json body, you are ready to call the Rinchem API. The format of the API call is shown below.
-```json
+```
 {
-    "Method": your_verb, 
-    "RequestUri": your_instance_url + your_api_suffix, 
+    "Method": <your_verb>, 
+    "RequestUri": your_instance_url + <your_api_suffix>, 
     "Version": 1.1, 
     "Headers":
         {
-            "Authorization": "Bearer " + your_access_token,
+            "Authorization": "Bearer " + <your_access_token>,
             "Accept": "application/json",
             "Content-Type": "application/json; charset=utf-8",
             "Content-Length": 972
         },
 
-    "Content": your_json_body
+    "Content": <your_json_body>
 }
 ```
 POST and PATCH should be the primary verbs used, though, please visit the specific API READMEs to see which method verbs (POST, PATCH, GET, PUT) are accepted for each API. The other items have been covered priorly.
 
 #### API Suffixes
-Depending on your company's needs, you may be assigned a custom suffix. If you are using the generic APIs then their suffixes are as follows:
-```
-Advance Shipping Notices (ASN)			-> 		"/services/apexrest/v1/ASN__c"
-Confirmation of Inbound Receipt 		-> 		"/services/apexrest/v1/XXX__c"
-Outbound Order Release 					->		"/services/apexrest/v1/YYY_c"
-Outbound Order Ship Confirmation 	 	->		"/services/apexrest/v1/ZZZ__c"
-Inventory Reconciliation 				->		"/services/apexrest/v1/QQQ__c"
-```
+Depending on your company's needs, you may be assigned a custom suffix. However, if you are using the generic APIs then their suffixes are as follows:
+<table>
+<tr><td>Advance Shipping Notices (ASN)	  </td><td>"/services/apexrest/v1/ASN__c"   </td></tr>
+<tr><td>Confirmation of Inbound Receipt   </td><td>"/services/apexrest/v1/XXX__c"   </td></tr>
+<tr><td>Outbound Order Release 			  </td><td>"/services/apexrest/v1/YYY_c"    </td></tr>
+<tr><td>Outbound Order Ship Confirmation  </td><td>"/services/apexrest/v1/ZZZ__c"   </td></tr>
+<tr><td>Inventory Reconciliation 		  </td><td>"/services/apexrest/v1/QQQ__c"   </td></tr>
+</table>
 
 After calling the API, a json response is returned with a status code and a phrase.
 
@@ -116,12 +121,13 @@ If a field item isn't valid or if their is a duplicate item an error will be ret
 
 ```
 
-If the authentication tokens are still valid and the json content body is valid a response will be returned along the likes of this:
-```json
+If the authentication tokens are still valid and the json content body is valid, a response will be returned along the likes of this:
+```
 {
 	"status":"Success",
     "message":"Your request has been imported successfully", 
-    your_object_type : your_object_sent}
+    your_object_type : your_object_sent
+}
 ```
 This includes the status, a message, and the content that was originally sent to the api.
 
@@ -129,8 +135,10 @@ This includes the status, a message, and the content that was originally sent to
 
 
 ## Pre-built Console Installation
-Rinchem has built a small console to aid in your integration pursuit, it can be used as-is to test your credentials in a remote call, as well as  to send test API Calls. If desired, using C#, this can built upon to function as a full blown integration solution. If this is your intent, please see the README in the nested RinchemApiIntegrationConsole folder.
+Rinchem has built a small console to aid in your integration pursuit, it can be used as-is to test your credentials in a remote call, as well as  to send test API Calls. If desired, using C#, this can be built upon to function as a full integration solution. If this is your intent, please see the README in the nested RinchemApiIntegrationConsole folder.
+
 <img src="https://cloud.githubusercontent.com/assets/25616817/26076136/f38b2b0a-3974-11e7-9102-b213d3e2f156.PNG" alt="">
+
 If you are just getting started and simply want to download the pre-built console, you may do so by downloading the RinchemAsnIntegrator.zip file (click on the file, then on the subsequent page there is a button to 'Download'). Once downloaded:
 1. Extract the zip file to your desired location. 
 2. Within the folder, the executable is named **'RinchemApiIntegrationConsole.exe'**
