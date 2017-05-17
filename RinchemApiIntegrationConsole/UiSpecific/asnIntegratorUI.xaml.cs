@@ -34,7 +34,7 @@ namespace RinchemApiIntegrationConsole
         //Appends a new message to the log box content
         public void updateLogBox(String logContent)
         {
-            TextBlock LogOutput = this.FindName("logOutput") as TextBlock;
+            TextBox LogOutput = this.FindName("logOutput") as TextBox;
             LogOutput.Text = logContent;
             ScrollViewer LogScroller = this.FindName("LogScroller") as ScrollViewer;
             LogScroller.ScrollToEnd();
