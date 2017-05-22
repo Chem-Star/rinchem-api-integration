@@ -22,14 +22,16 @@ Append this to your Salesforce **instance_url**.
 
 #### ASN Accepted HTTP Verbs:
 <Table>
-<tr><th>Verb</th><th>Actions</th></tr>
-<tr><td>POST</td><td>Used for adding a new ASN</td></tr>
-<tr><td>PATCH</td><td>Used to Update or Cancel an ASN</td></tr>
+<tr><th>Verb</th><th>Actions</th><th>Purpose</th></tr>
+<tr><td>POST</td><td>N/A</td><td>Used for adding a new ASN</td></tr>
+<tr><td>PATCH</td><td>UPDATE, CANCEL</td><td>Used to Update or Cancel an ASN</td></tr>
 </Table>
 
 
 ### Body Payload: 
-For a new ASN request the API expects a body payload with the following json format. In order to make this more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
+For a new ASN request the API expects a body payload with the json format displayed below. The demonstrated payload shows all fields that the API can handle, though some of these are not necessary. Please see the following sections for minimum permissible payloads for each VERB type.
+
+In order to make the payloads more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
 
 ```
 {
@@ -94,8 +96,9 @@ For a new ASN request the API expects a body payload with the following json for
 	}
 }
 ```
-#### Required Fields:
-Requests will not be accepted into the WMS if any of these fields have improper fields. The following sections outline accepted values for some of the more specialized fields such as unit of measure and hold codes.
+#### Required Fields POST:
+POST requests will not be accepted into the WMS if any of these fields have improper values. The **Accepted Values** section below outlines permissible values for some of the more specialized fields such as unit of measure and hold codes.
+
 ```
 {
 	"rqst": {
@@ -129,8 +132,22 @@ Requests will not be accepted into the WMS if any of these fields have improper 
 }
 ```
 
+#### Required Fields PATCH
+In order to use the PATCH verb, the payload should provide the unique order id (returned after a successful POST call) in the 'Name' field, and the desired action in the 'Action__c' field. Any other fields that are provided will be updated with their new values.
 
-### Accepted Carrier IDs
+```
+{
+	"rqst": {
+		"asn": {
+			"Name": "xxxxx",
+			"Action__c": "xxxxxx",
+		}
+	}
+}
+```
+
+### Accepted Values
+#### Accepted Carrier IDs
 For a full list of Carrier IDs please see the attached excel sheet **AcceptedValues.xlsx**, under the *Carrier_Id* tab.
 <Table>
 <tr><th>Warehouse</th><th>Carrier Service</th><th>Carrier Service Name</th></tr>
@@ -139,7 +156,7 @@ For a full list of Carrier IDs please see the attached excel sheet **AcceptedVal
 <tr> <td>11</td> <td>FRGHTWORKS</td> <td>FREIGHTWORKS</td> </tr>
 </Table>
 
-### Accepted Warehouse IDs
+#### Accepted Warehouse IDs
 For a full list of Warehouse IDs please see the attached excel sheet **AcceptedValues.xlsx**, under the *Warehouse_Code* tab.
 
 <Table>
@@ -150,7 +167,7 @@ For a full list of Warehouse IDs please see the attached excel sheet **AcceptedV
 
 </Table>
 
-### Accepted Hold Codes
+#### Accepted Hold Codes
 Also available in the AcceptedValues excel sheet, under the *Hold_Code* tab.
 <Table>
 <tr><th>Hold Code</th><th>Description</th><th>Affect Damaged</th></tr>
@@ -166,7 +183,7 @@ Also available in the AcceptedValues excel sheet, under the *Hold_Code* tab.
 
 </Table>
 
-### Accepted Units of Measure
+#### Accepted Units of Measure
 Also available in the AcceptedValues excel sheet, under the *Unit_Of_Measure* tab.
 <Table>
 <tr>
