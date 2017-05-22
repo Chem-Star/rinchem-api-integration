@@ -4,23 +4,22 @@
   <img src="http://www.rinchem.com/images/logo.gif" alt="Slate: API Documentation Generator" width="226">
 </p>
 
-<h1 align="center">Rinchem API Integration - ASN </h1>
+<h1 align="center">Rinchem API Integration - Outbound Orders</h1>
 
 ## Motivation
 
-The Advance Shipping Notice, ASN, provides order and shipment information in one electronic transaction sent from the shipper to the receiver. While the ASN is similar to a Bill of Lading (BOL) and even carries much of the same information, it has a different function. The BOL is meant to accompany a shipment along its path. An ASN is intended to provide information in advance of the shipment arriving at its destination.
-The value of the ASN comes from receiving it prior to the actual shipment. Rinchem provides a standardized data integration method to ensure easy, efficient, and accurate data exchange. 
+The Outbound Order, OBO, provides 
 
-## Calling The ASN API
+## Calling The OBO API
 If you have not done so already, please review the documentation in the main README.md as that walks you through the process to get the necessary **instance_url** and **authentication_token**, as well as how to format the call once you have the correct body payload. 
 
-#### ASN Suffix:
+#### OBO Suffix:
 Append this to your Salesforce **instance_url**.
 ```
-/services/apexrest/v1/ASN__c
+/services/apexrest/v1/OBO__c
 ```
 
-#### ASN Accepted HTTP Verbs:
+#### OBO Accepted HTTP Verbs:
 <Table>
 <tr><th>Verb</th><th>Actions</th></tr>
 <tr><td>POST</td><td>Used for adding a new ASN</td></tr>
@@ -29,101 +28,84 @@ Append this to your Salesforce **instance_url**.
 
 
 ### Body Payload: 
-For a new ASN request the API expects a body payload with the following json format. In order to make this more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
+For a new OBO request the API expects a body payload with the following json format. In order to make this more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
 
 ```
 {
 	"rqst": {
-		"asn": {
+		"obo": {
 			"Name": "",
-			"Action__c": "xxx",
-			"Message_Id__c": "xxx",
-			"Date_ASN_Sent__c": "xxxx-xx-xx",
-			"Supplier_Name__c": "xxx",
-			"Rinchem_Supplier_Id__c": "xxx",
-			"ASN_Recipient_Name__c": "xxxx",
-			"ASN_Recipient_Id__c": "xxxxx",
-			"Template_Version__c": "xx.xx",
-			"Estimated_Ship_Date__c": "xxxx-xx-xx",
-			"Estimated_Arrival_Date__c": "xxxx-xx-xx",
-			"Shipment_Id__c": "xxx xxxxxx",
-			"BOL_Number__c": "",
-			"Ship_From_Supplier__c": "xxx",
-			"Order_Type__c": "xx",
-			"Order_Number__c": "",
-			"Origin_Id__c": "xxx",
-			"Origin_Street_Address__c": "xxx Rinchem Dr.",
-			"Origin_City__c": "City",
-			"Origin_State__c": "State",
-			"Origin_Postal_Code__c": "123445",
-			"Origin_Country__c": "USA",
-			"Destination_Name__c": "",
-			"Destination_Warehouse_Code__c": "xx",
-			"Destination_Address__c": "1023 address ave nw",
-			"Destination_City__c": "city",
-			"Destination_State__c": "state",
-			"Destination_Postal_Code__c": "123445",
-			"Destination_Country__c": "USA",
-			"Carrier_Id__c": "ddd",
-			"Carrier_Name__c": "xxx",
-			"Purchase_Order_Number__c": "xxx",
-			"Product_Owner_Id__c": "xxx"
+			"Action__c": "",
+			"Message_Id__c": "",
+			"Order_Date__c": "2017-04-20",
+			"Rinchem_Supplier_Id__c": "MAL",
+			"Purchase_Order_Number__c": "153329",
+			"Ship_To_Customer__c": "INTEL",
+			"Ship_To_Name__c": "Intel",
+			"Freight_Payment_Terms_Type__c": "",
+			"Bill_To_Customer_Code__c": "",
+			"Bill_To_Name__c": "",
+			"Desired_Delivery_Date__c": "2017-04-21",
+			"Carrier_Service__c": "FRGHTWORKS",
+			"From_Warehouse_Code__c": "Chandler",
+			"Order_Type__c": "PO",
+			"Product_Owner_Id__c": "MAL"
 		},
 		"lineItems": [{
 			"Name": "1",
-			"Vendor_Part_Number__c": "dfdasf_part",
-			"Product_Description__c": "This is an example line item",
-			"Product_Lot_Number__c": "213123",
-			"Product_Expiration_Date__c": "2312-23-01",
-			"Quantity__c": "343290",
-			"Unit_of_Measure__c": "DRUM",
+			"Outbound_Order__c": "",
 			"Hold_Code__c": "",
-			"Serial_Number__c": ""
-		},
+			"Inventory_Detail__c": "",
+			"Lot_Number__c": "",
+			"Rinchem_Part_Number__c": "",
+			"Quantity__c": "",
+			"Unit_of_Measure__c": ""
+		},		
 		{
 			"Name": "2",
-			"Vendor_Part_Number__c": "dfdasf_part",
-			"Product_Description__c": "This is an example line item",
-			"Product_Lot_Number__c": "213123",
-			"Product_Expiration_Date__c": "2312-23-01",
-			"Quantity__c": "343290",
-			"Unit_of_Measure__c": "DRUM",
+			"Outbound_Order__c": "",
 			"Hold_Code__c": "",
-			"Serial_Number__c": ""
+			"Inventory_Detail__c": "",
+			"Lot_Number__c": "",
+			"Rinchem_Part_Number__c": "",
+			"Quantity__c": "",
+			"Unit_of_Measure__c": ""
 		}]
 	}
 }
 ```
 #### Required Fields:
-Requests will not be accepted into the WMS if any of these fields have improper fields. The following sections outline accepted values for some of the more specialized fields such as unit of measure and hold codes.
+Requests will not be accepted into the system if any of these fields have improper values. The following sections outline accepted values for some of the more specialized fields such as unit of measure and hold codes.
 ```
 {
 	"rqst": {
-		"asn": {
-			"Message_Id__c": "xxx",
-			"Date_ASN_Sent__c": "xxxx-xx-xx",
-			"Supplier_Name__c": "xxx",
+		"obo": {
+			"Name": "",
+			"Action__c": "",
+			"Message_Id__c": "",
+			"Order_Date__c": "YYYY-MM-DD",
 			"Rinchem_Supplier_Id__c": "xxx",
-			"ASN_Recipient_Name__c": "xxxx",
-			"ASN_Recipient_Id__c": "xxxxx",
-			"Template_Version__c": "xx.xx",
-			"Estimated_Ship_Date__c": "xxxx-xx-xx",
-			"Estimated_Arrival_Date__c": "xxxx-xx-xx",
-			"Shipment_Id__c": "xxx xxxxxx",
-			"Order_Type__c": "xx",
-			"Origin_Id__c": "xxx",
-			"Destination_Warehouse_Code__c": "xx",
-			"Carrier_Id__c": "ddd",
-			"Carrier_Name__c": "xxx",
-			"Purchase_Order_Number__c": "xxx",
-			"Product_Owner_Id__c": "xxx"
+			"Purchase_Order_Number__c": "xxxxxx",
+			"Ship_To_Customer__c": "",
+			"Ship_To_Name__c": "",
+			"Freight_Payment_Terms_Type__c": "",
+			"Bill_To_Customer_Code__c": "",
+			"Bill_To_Name__c": "",
+			"Desired_Delivery_Date__c": "YYYY-MM-DD",
+			"Carrier_Service__c": "",
+			"From_Warehouse_Code__c": "",
+			"Order_Type__c": "PO",
+			"Product_Owner_Id__c": "XXX"
 		},
 		"lineItems": [{
 			"Name": "1",
-			"Vendor_Part_Number__c": "dfdasf_part",
-			"Product_Description__c": "This is an example line item",
-			"Quantity__c": "343290",
-			"Unit_of_Measure__c": "DRUM"
+			"Outbound_Order__c": "",
+			"Hold_Code__c": "",
+			"Inventory_Detail__c": "",
+			"Lot_Number__c": "",
+			"Rinchem_Part_Number__c": "",
+			"Quantity__c": "",
+			"Unit_of_Measure__c": ""
 		}]
 	}
 }
