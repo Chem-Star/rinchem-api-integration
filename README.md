@@ -124,12 +124,13 @@ If a field item isn't valid or if their is a duplicate item an error will be ret
 If the authentication tokens are still valid and the json content body is valid, a response will be returned along the likes of this:
 ```
 {
-	"status":"Success",
+    "status":"Success",
     "message":"Your request has been imported successfully", 
+    "asn_order_num" : unique_asn_id
     your_object_type : your_object_sent
 }
 ```
-This includes the status, a message, and the content that was originally sent to the api.
+This includes the status, a message, the content that was originally sent to the api, and the **asn_order_num**. The asn_order_num may be used to reference the proper ASN during PATCH (UPDATE, and DELETE) calls to the system.
 
 **Congrats! You have successfully made an API call to the Rinchem Salesforce server.**
 
