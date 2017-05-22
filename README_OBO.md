@@ -8,7 +8,7 @@
 
 ## Motivation
 
-The Outbound Order, OBO, provides 
+The Outbound Order, OBO, provides details related to orders being shipped from Rinchem either to a facility or to another Rinchem warehouse
 
 ## Calling The OBO API
 If you have not done so already, please review the documentation in the main README.md as that walks you through the process to get the necessary **instance_url** and **authentication_token**, as well as how to format the call once you have the correct body payload. 
