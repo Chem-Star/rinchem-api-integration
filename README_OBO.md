@@ -21,61 +21,17 @@ Append this to your Salesforce **instance_url**.
 
 #### OBO Accepted HTTP Verbs:
 <Table>
-<tr><th>Verb</th><th>Actions</th></tr>
-<tr><td>POST</td><td>Used for adding a new OBO</td></tr>
-<tr><td>PATCH</td><td>Used to Update or Cancel an OBO</td></tr>
+<tr><th>Verb</th><th>Actions</th><th>Purpose</th></tr>
+<tr><td>POST</td><td>N/A</td><td>Used for adding a new OBO</td></tr>
+<tr><td>PATCH</td><td>UPDATE, CANCEL</td><td>Used to Update or Cancel an OBO</td></tr>
 </Table>
 
 
 ### Body Payload: 
-For a new OBO request the API expects a body payload with the following json format. In order to make this more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
+For a new OBO request the API expects a body payload with the json format displayed below. The demonstrated payload shows all fields that the API can handle, though some of these are not necessary. Please see the following sections for minimum permissible payloads for each VERB type.
 
-```
-{
-	"rqst": {
-		"obo": {
-			"Name": "",
-			"Action__c": "",
-			"Message_Id__c": "",
-			"Order_Date__c": "2017-04-20",
-			"Rinchem_Supplier_Id__c": "MAL",
-			"Purchase_Order_Number__c": "153329",
-			"Ship_To_Customer__c": "INTEL",
-			"Ship_To_Name__c": "Intel",
-			"Freight_Payment_Terms_Type__c": "",
-			"Bill_To_Customer_Code__c": "",
-			"Bill_To_Name__c": "",
-			"Desired_Delivery_Date__c": "2017-04-21",
-			"Carrier_Service__c": "FRGHTWORKS",
-			"From_Warehouse_Code__c": "Chandler",
-			"Order_Type__c": "PO",
-			"Product_Owner_Id__c": "MAL"
-		},
-		"lineItems": [{
-			"Name": "1",
-			"Outbound_Order__c": "",
-			"Hold_Code__c": "",
-			"Inventory_Detail__c": "",
-			"Lot_Number__c": "",
-			"Rinchem_Part_Number__c": "",
-			"Quantity__c": "",
-			"Unit_of_Measure__c": ""
-		},		
-		{
-			"Name": "2",
-			"Outbound_Order__c": "",
-			"Hold_Code__c": "",
-			"Inventory_Detail__c": "",
-			"Lot_Number__c": "",
-			"Rinchem_Part_Number__c": "",
-			"Quantity__c": "",
-			"Unit_of_Measure__c": ""
-		}]
-	}
-}
-```
-#### Required Fields:
-Requests will not be accepted into the system if any of these fields have improper values. The following sections outline accepted values for some of the more specialized fields such as unit of measure and hold codes.
+In order to make the payloads more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
+
 ```
 {
 	"rqst": {
@@ -84,13 +40,57 @@ Requests will not be accepted into the system if any of these fields have improp
 			"Action__c": "",
 			"Message_Id__c": "",
 			"Order_Date__c": "YYYY-MM-DD",
+			"Rinchem_Supplier_Id__c": "XXX",
+			"Purchase_Order_Number__c": "xxxxxxx",
+			"Ship_To_Customer__c": "xxxxxx",
+			"Ship_To_Name__c": "xxxxxx",
+			"Freight_Payment_Terms_Type__c": "xx",
+			"Bill_To_Customer_Code__c": "xxxxxxx",
+			"Bill_To_Name__c": "xxxxxxx",
+			"Desired_Delivery_Date__c": "2017-04-21",
+			"Carrier_Service__c": "xxxxxxx",
+			"From_Warehouse_Code__c": "xxxxxxx",
+			"Order_Type__c": "XX",
+			"Product_Owner_Id__c": "XXX"
+		},
+		"lineItems": [
+    		{
+    			"Name": "1",
+    			"Outbound_Order__c": "OBO-XXXXX",
+    			"Hold_Code__c": "XX",
+    			"Inventory_Detail__c": "xxxxxxx",
+    			"Lot_Number__c": "XXXX",
+    			"Rinchem_Part_Number__c": "xxxxxx_part",
+    			"Quantity__c": "XX",
+    			"Unit_of_Measure__c": "xxxxx"
+    		},		
+    		{
+    			"Name": "2",
+    			"Outbound_Order__c": "OBO-XXXXX",
+    			"Hold_Code__c": "XX",
+    			"Inventory_Detail__c": "xxxxxxx",
+    			"Lot_Number__c": "XXXX",
+    			"Rinchem_Part_Number__c": "xxxxxx_part",
+    			"Quantity__c": "XX",
+    			"Unit_of_Measure__c": "xxxxx"
+    		}
+		]
+	}
+}
+```
+#### Required Fields - POST:
+POST requests will not be accepted into the WMS if any of these fields have improper values. The **Accepted Values** section below outlines permissible values for some of the more specialized fields such as unit of measure and hold codes.
+```
+{
+	"rqst": {
+		"obo": {
+			"Message_Id__c": "",
+			"Order_Date__c": "YYYY-MM-DD",
 			"Rinchem_Supplier_Id__c": "xxx",
 			"Purchase_Order_Number__c": "xxxxxx",
 			"Ship_To_Customer__c": "",
-			"Ship_To_Name__c": "",
 			"Freight_Payment_Terms_Type__c": "",
 			"Bill_To_Customer_Code__c": "",
-			"Bill_To_Name__c": "",
 			"Desired_Delivery_Date__c": "YYYY-MM-DD",
 			"Carrier_Service__c": "",
 			"From_Warehouse_Code__c": "",
@@ -99,14 +99,22 @@ Requests will not be accepted into the system if any of these fields have improp
 		},
 		"lineItems": [{
 			"Name": "1",
-			"Outbound_Order__c": "",
-			"Hold_Code__c": "",
-			"Inventory_Detail__c": "",
-			"Lot_Number__c": "",
 			"Rinchem_Part_Number__c": "",
 			"Quantity__c": "",
 			"Unit_of_Measure__c": ""
 		}]
+	}
+}
+```
+#### Required Fields - PATCH
+In order to use the PATCH verb, the payload should provide the unique order id (returned after a successful POST call) in the 'Name' field, and the desired action in the 'Action__c' field. Any other fields that are provided will be updated with their new values.
+```
+{
+	"rqst": {
+		"obo": {
+			"Name": "xxxxx",
+			"Action__c": "xxxxxx",
+		}
 	}
 }
 ```
@@ -116,9 +124,8 @@ Requests will not be accepted into the system if any of these fields have improp
 For a full list of Carrier IDs please see the attached excel sheet **AcceptedValues.xlsx**, under the *Carrier_Id* tab.
 <Table>
 <tr><th>Warehouse</th><th>Carrier Service</th><th>Carrier Service Name</th></tr>
-<tr> <td>11</td> <td>RINCHEM</td> <td>Rinchem</td> </tr>
 <tr> <td>11</td> <td>CGL</td> <td>CGL</td> </tr>
-<tr> <td>11</td> <td>FRGHTWORKS</td> <td>FREIGHTWORKS</td> </tr>
+<tr> <td>11</td> <td>RINCHEM</td> <td>Rinchem</td> </tr>
 </Table>
 
 ### Accepted Warehouse IDs
