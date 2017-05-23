@@ -8,7 +8,7 @@
 
 ## Motivation
 
-The Outbound Order, OBO, provides details related to orders being shipped from Rinchem either to a facility or to another Rinchem warehouse
+The Outbound Order, OBO, provides details related to orders being shipped from Rinchem either to a facility or to another Rinchem warehouse. By integrating with the API, this information becomes more consistent, more secure, and more easily accessible where and when you need it.
 
 ## Calling The OBO API
 If you have not done so already, please review the documentation in the main README.md as that walks you through the process to get the necessary **instance_url** and **authentication_token**, as well as how to format the call once you have the correct body payload. 
@@ -22,8 +22,8 @@ Append this to your Salesforce **instance_url**.
 #### OBO Accepted HTTP Verbs:
 <Table>
 <tr><th>Verb</th><th>Actions</th></tr>
-<tr><td>POST</td><td>Used for adding a new ASN</td></tr>
-<tr><td>PATCH</td><td>Used to Update or Cancel an ASN</td></tr>
+<tr><td>POST</td><td>Used for adding a new OBO</td></tr>
+<tr><td>PATCH</td><td>Used to Update or Cancel an OBO</td></tr>
 </Table>
 
 
