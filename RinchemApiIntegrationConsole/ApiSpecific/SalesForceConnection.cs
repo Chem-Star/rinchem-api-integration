@@ -119,8 +119,9 @@ namespace RinchemApiIntegrationConsole
                     SalesForceResponse resultObject = JsonConvert.DeserializeObject<SalesForceResponse>(result);
                     ConsoleLogger.log(resultObject.status);
                     ConsoleLogger.log(resultObject.message);
-                    ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.asn));
-                    resultObject.lineItems.ForEach(x => ConsoleLogger.log(JsonConvert.SerializeObject(x)));
+                    ConsoleLogger.log(resultObject.asn_order_num);
+                    //ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.asn));
+                    //resultObject.lineItems.ForEach(x => ConsoleLogger.log(JsonConvert.SerializeObject(x)));
                     if (resultObject.status == "Error") return false;
                     else return true;
                 }
@@ -155,6 +156,7 @@ namespace RinchemApiIntegrationConsole
     {
         public String status;
         public String message;
+        public String asn_order_num;
         public List<Object> lineItems;
         public Object asn;
     }
