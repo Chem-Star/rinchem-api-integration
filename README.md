@@ -90,14 +90,14 @@ Once you have retrieved the access_token and instance_url and you have created y
     "Content": <your_json_body>
 }
 ```
-POST and PATCH should be the primary verbs used, though, please visit the specific API READMEs to see which method verbs (POST, PATCH, GET, PUT) are accepted for each API. The other items have been covered priorly.
+POST and PATCH should be the primary verbs used, though, please visit the specific API READMEs to see which method verbs (POST, PATCH, GET, PUT, DELETE) are accepted for each API. The other items have been covered priorly.
 
 #### API Suffixes
 Depending on your company's needs, you may be assigned a custom suffix. However, if you are using the generic APIs then their suffixes are as follows:
 <table>
 <tr><td>Advance Shipping Notices (ASN)	  </td><td>"/services/apexrest/v1/ASN__c"   </td></tr>
+<tr><td>Outbound Order Release 			  </td><td>"/services/apexrest/v1/OBO_c"    </td></tr>
 <tr><td>Confirmation of Inbound Receipt   </td><td>"/services/apexrest/v1/XXX__c"   </td></tr>
-<tr><td>Outbound Order Release 			  </td><td>"/services/apexrest/v1/YYY_c"    </td></tr>
 <tr><td>Outbound Order Ship Confirmation  </td><td>"/services/apexrest/v1/ZZZ__c"   </td></tr>
 <tr><td>Inventory Reconciliation 		  </td><td>"/services/apexrest/v1/QQQ__c"   </td></tr>
 </table>
