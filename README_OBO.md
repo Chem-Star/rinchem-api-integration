@@ -22,8 +22,8 @@ Append this to your Salesforce **instance_url**.
 #### OBO Accepted HTTP Verbs:
 <Table>
 <tr><th>Verb</th><th>Actions</th><th>Purpose</th></tr>
-<tr><td>POST</td><td>N/A</td><td>Used for adding a new ASN</td></tr>
-<tr><td>PATCH</td><td>UPDATE, CANCEL</td><td>Used to Update or Cancel an ASN</td></tr>
+<tr><td>POST</td><td>N/A</td><td>Used for adding a new OBO</td></tr>
+<tr><td>PATCH</td><td>UPDATE, CANCEL</td><td>Used to Update or Cancel an OBO</td></tr>
 </Table>
 
 
@@ -111,7 +111,7 @@ In order to use the PATCH verb, the payload should provide the unique order id (
 ```
 {
 	"rqst": {
-		"asn": {
+		"obo": {
 			"Name": "xxxxx",
 			"Action__c": "xxxxxx",
 		}
