@@ -11,6 +11,12 @@ namespace RinchemApiIntegrationConsole
     interface DataLoader
     {
         /// <summary>
+        /// Implementer must implement this.
+        /// </summary>
+        /// <returns>A unique string to represent the data loader in the User Interface</returns>
+        String GetUniqueName();
+
+        /// <summary>
         /// Implementer should implement this if they need to add cutom fields and pull data from the GUI
         /// </summary>
         /// <returns>A collection of UI elements</returns>
@@ -35,7 +41,7 @@ namespace RinchemApiIntegrationConsole
         /// is what is sent through the API to Salesforce.
         /// </summary>
         /// <returns>An AsnObject model of the data</returns>
-        AsnObject ConvertDataToAsnObject();
+        DataObject ConvertDataToObject();
     }
 
     public class Field

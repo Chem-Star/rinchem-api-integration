@@ -78,6 +78,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DataSpecific\DataObject.cs" />
     <Compile Include="DataSpecific\RinchemExcelLoader.cs" />
     <Compile Include="UiSpecific\asnIntegratorUI.xaml.cs">
       <DependentUpon>asnIntegratorUI.xaml</DependentUpon>

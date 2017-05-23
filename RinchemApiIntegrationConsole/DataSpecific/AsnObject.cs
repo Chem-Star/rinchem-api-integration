@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RinchemApiIntegrationConsole
 {
-    class AsnObject
+    class AsnObject : DataObject
     {
         public Request rqst;
 

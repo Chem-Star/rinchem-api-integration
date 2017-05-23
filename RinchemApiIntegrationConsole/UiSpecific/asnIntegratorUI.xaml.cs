@@ -192,7 +192,7 @@ namespace RinchemApiIntegrationConsole
             loaders.ForEach(loader =>
             {
                 LoaderInfo loaderInfo = new LoaderInfo();
-                loaderInfo.DataLoaderName = loader.GetType().ToString();
+                loaderInfo.DataLoaderName = loader.GetUniqueName();
                 loaderInfo.CustomFields = loader.GetCustomFields();
                 loadersInfo.Add(loaderInfo);
             });
@@ -328,10 +328,10 @@ namespace RinchemApiIntegrationConsole
             Profile profile = apiManager.getProfile(ProfileNameBox.Text);
             apiManager.getDataLoaders().ForEach(loader =>
                 {
-                    data.Add(loader.GetType().ToString());
+                    data.Add(loader.GetUniqueName());
 
                     if (profile == null || profile.CustomFields == null) return;
-                    LoaderInfo loaderInfo = profile.CustomFields.Find(customField => customField.DataLoaderName == loader.GetType().ToString());
+                    LoaderInfo loaderInfo = profile.CustomFields.Find(customField => customField.DataLoaderName == loader.GetUniqueName());
                     if (loaderInfo == null) return;
 
                     loaderInfo.CustomFields.ForEach(loaderInfoField =>

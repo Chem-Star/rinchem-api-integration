@@ -40,14 +40,14 @@ In order to make the payloads more accessible, a C# object representation has be
 			"Name": "",
 			"Action__c": "xxx",
 			"Message_Id__c": "xxx",
-			"Date_ASN_Sent__c": "YYYY-MM-DD",
+			"Date_ASN_Sent__c": "xxxx-xx-xx",
 			"Supplier_Name__c": "xxx",
 			"Rinchem_Supplier_Id__c": "xxx",
 			"ASN_Recipient_Name__c": "xxxx",
 			"ASN_Recipient_Id__c": "xxxxx",
 			"Template_Version__c": "xx.xx",
-			"Estimated_Ship_Date__c": "YYYY-MM-DD",
-			"Estimated_Arrival_Date__c": "YYYY-MM-DD",
+			"Estimated_Ship_Date__c": "xxxx-xx-xx",
+			"Estimated_Arrival_Date__c": "xxxx-xx-xx",
 			"Shipment_Id__c": "xxx xxxxxx",
 			"BOL_Number__c": "",
 			"Ship_From_Supplier__c": "xxx",
@@ -57,14 +57,14 @@ In order to make the payloads more accessible, a C# object representation has be
 			"Origin_Street_Address__c": "xxx Rinchem Dr.",
 			"Origin_City__c": "City",
 			"Origin_State__c": "State",
-			"Origin_Postal_Code__c": "xxxxx",
+			"Origin_Postal_Code__c": "123445",
 			"Origin_Country__c": "USA",
 			"Destination_Name__c": "",
 			"Destination_Warehouse_Code__c": "xx",
-			"Destination_Address__c": "xxxx Address Ave NW",
+			"Destination_Address__c": "1023 address ave nw",
 			"Destination_City__c": "city",
 			"Destination_State__c": "state",
-			"Destination_Postal_Code__c": "xxxxx",
+			"Destination_Postal_Code__c": "123445",
 			"Destination_Country__c": "USA",
 			"Carrier_Id__c": "ddd",
 			"Carrier_Name__c": "xxx",
@@ -73,22 +73,22 @@ In order to make the payloads more accessible, a C# object representation has be
 		},
 		"lineItems": [{
 			"Name": "1",
-			"Vendor_Part_Number__c": "xxxxxx_part",
+			"Vendor_Part_Number__c": "dfdasf_part",
 			"Product_Description__c": "This is an example line item",
-			"Product_Lot_Number__c": "xxxxxx",
-			"Product_Expiration_Date__c": "YYYY-MM-DD",
-			"Quantity__c": "XX",
+			"Product_Lot_Number__c": "213123",
+			"Product_Expiration_Date__c": "2312-23-01",
+			"Quantity__c": "343290",
 			"Unit_of_Measure__c": "DRUM",
 			"Hold_Code__c": "",
 			"Serial_Number__c": ""
 		},
 		{
 			"Name": "2",
-			"Vendor_Part_Number__c": "xxxxxx_part",
+			"Vendor_Part_Number__c": "dfdasf_part",
 			"Product_Description__c": "This is an example line item",
-			"Product_Lot_Number__c": "xxxxxx",
-			"Product_Expiration_Date__c": "YYYY-MM-DD",
-			"Quantity__c": "xx",
+			"Product_Lot_Number__c": "213123",
+			"Product_Expiration_Date__c": "2312-23-01",
+			"Quantity__c": "343290",
 			"Unit_of_Measure__c": "DRUM",
 			"Hold_Code__c": "",
 			"Serial_Number__c": ""
@@ -96,7 +96,7 @@ In order to make the payloads more accessible, a C# object representation has be
 	}
 }
 ```
-#### Required Fields - POST:
+#### Required Fields POST:
 POST requests will not be accepted into the WMS if any of these fields have improper values. The **Accepted Values** section below outlines permissible values for some of the more specialized fields such as unit of measure and hold codes.
 
 ```
@@ -123,16 +123,16 @@ POST requests will not be accepted into the WMS if any of these fields have impr
 		},
 		"lineItems": [{
 			"Name": "1",
-			"Vendor_Part_Number__c": "xxxxx_part",
+			"Vendor_Part_Number__c": "dfdasf_part",
 			"Product_Description__c": "This is an example line item",
-			"Quantity__c": "xx",
+			"Quantity__c": "343290",
 			"Unit_of_Measure__c": "DRUM"
 		}]
 	}
 }
 ```
 
-#### Required Fields - PATCH
+#### Required Fields PATCH
 In order to use the PATCH verb, the payload should provide the unique order id (returned after a successful POST call) in the 'Name' field, and the desired action in the 'Action__c' field. Any other fields that are provided will be updated with their new values.
 
 ```
@@ -151,8 +151,9 @@ In order to use the PATCH verb, the payload should provide the unique order id (
 For a full list of Carrier IDs please see the attached excel sheet **AcceptedValues.xlsx**, under the *Carrier_Id* tab.
 <Table>
 <tr><th>Warehouse</th><th>Carrier Service</th><th>Carrier Service Name</th></tr>
-<tr> <td>11</td> <td>CGL</td> <td>CGL</td> </tr>
 <tr> <td>11</td> <td>RINCHEM</td> <td>Rinchem</td> </tr>
+<tr> <td>11</td> <td>CGL</td> <td>CGL</td> </tr>
+<tr> <td>11</td> <td>FRGHTWORKS</td> <td>FREIGHTWORKS</td> </tr>
 </Table>
 
 #### Accepted Warehouse IDs

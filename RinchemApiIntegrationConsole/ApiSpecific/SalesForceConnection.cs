@@ -66,7 +66,7 @@ namespace RinchemApiIntegrationConsole
         }
 
 
-        public Boolean tryApiSetup( AsnObject asn)
+        public Boolean tryApiSetup( DataObject obj )
         {
             //  auth.* tokens are populated subsequent to a succesful UserNamePasswrdAsync() call
             //  Used to access SalesForce on the now open connection
@@ -74,7 +74,7 @@ namespace RinchemApiIntegrationConsole
             string serviceUrl = auth.InstanceUrl;
 
             //  Convert our asnObject into a json object string
-            string requestMessage = JsonConvert.SerializeObject(asn);
+            string requestMessage = JsonConvert.SerializeObject(obj);
 
             //  Convert our new JSON String into an HttpContent format that can actually be transmitted
             //  Third parameter is stored as a 'MediaType'

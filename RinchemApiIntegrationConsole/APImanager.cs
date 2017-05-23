@@ -18,7 +18,7 @@ namespace RinchemApiIntegrationConsole
         private Credentials credentials { get; set; }               // The login details used to connect to SalesForce
         private SalesForceConnection sfConnection { get; set; }     // Manages the salesforce connection
         private DataLoader dataLoader { get; set; }                 // Interface responsible for loading and converting data ***USER MUST IMPLEMENT THEIR OWN***
-        private AsnObject asnObject { get; set; }                   // Object containing all information to be sent in the ASN API call
+        private DataObject dataObject { get; set; }                     // Interface responsible for defining the model type
 
 
         // Constructor -- needs ui so that it can update the logbox
@@ -40,7 +40,7 @@ namespace RinchemApiIntegrationConsole
         // Get the specified data loader
         public void setDataLoader(String typeName)
         {
-            dataLoader = dataLoaders.Find(x => x.GetType().ToString() == typeName);
+            dataLoader = dataLoaders.Find(x => x.GetUniqueName() == typeName);
             if (dataLoader == null) ConsoleLogger.log("Couldn't find the specified DataLoader" + typeName);
         }
 
@@ -96,7 +96,7 @@ namespace RinchemApiIntegrationConsole
             return success;
         }
 
-        // Trys to load the raw asn data
+        // Trys to load the raw object data
         public async Task<Boolean> testLoadData()
         {
             bool success = await dataLoader.LoadData();
@@ -112,11 +112,11 @@ namespace RinchemApiIntegrationConsole
             return success;
         }
 
-        // Trys to convert the raw asn data to an AsnObject
+        // Trys to convert the raw object data to an DataObject
         public Boolean testConvertData()
         {
-            asnObject = dataLoader.ConvertDataToAsnObject();
-            bool success = (asnObject != null) ? asnObject.validate() : false;
+            dataObject = dataLoader.ConvertDataToObject();
+            bool success = (dataObject != null) ? dataObject.validate() : false;
 
             if (success)
             {
@@ -130,11 +130,11 @@ namespace RinchemApiIntegrationConsole
             return success;
         }
 
-        // Trys to serializes the AsnObject and open the HTTP connection
+        // Trys to serializes the DataObject and open the HTTP connection
         public Boolean testApiSetup()
         {
-            if (sfConnection == null || asnObject == null) return false;
-            bool success = sfConnection.tryApiSetup(asnObject);
+            if (sfConnection == null || dataObject == null) return false;
+            bool success = sfConnection.tryApiSetup(dataObject);
 
             if (success)
             {

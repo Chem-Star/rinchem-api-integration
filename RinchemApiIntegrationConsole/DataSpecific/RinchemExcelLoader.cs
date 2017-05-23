@@ -16,6 +16,14 @@ namespace RinchemApiIntegrationConsole
         Field shipID = new Field() { Name = "Ship_ID", Value = "" };
 
         List<List<String>> rawData;
+        
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///         **DEFINE UNIQUE NAME**              CUSTOMER MUST IMPLEMENT                                      ///
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        public String GetUniqueName()
+        {
+            return "ASN - Rinchem Excel Loader";
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///         **DEFINE CUSTOM FIELDS**            CUSTOMER MUST IMPLEMENT                                      ///
@@ -138,7 +146,7 @@ namespace RinchemApiIntegrationConsole
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///         **CONVERT THE DATA TO ASN FORMAT**        CUSTOMER MUST IMPLEMENT                                ///
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public AsnObject ConvertDataToAsnObject()
+        public DataObject ConvertDataToObject()
         {
             AsnObject asnObject = new AsnObject();          //Initialize our ASN object
             asnObject.rqst = new Request();                 //Initialize the request object
@@ -195,7 +203,6 @@ namespace RinchemApiIntegrationConsole
             for(int i=1; i<rawData.Count; i++)
             {
                 LineItems lineItem = new LineItems();
-                ConsoleLogger.log("boop" + getStringItem(i, "Hold_Code"));
 
                 lineItem.Name                               = getStringItem( i, "Line_Item_#"               );
                 lineItem.Vendor_Part_Number__c              = getStringItem( i, "Vendor_PN"                 );
