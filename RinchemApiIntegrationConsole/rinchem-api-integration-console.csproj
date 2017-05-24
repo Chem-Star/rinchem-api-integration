@@ -79,15 +79,18 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataSpecific\DataObject.cs" />
-    <Compile Include="DataSpecific\RinchemExcelLoader.cs" />
+    <Compile Include="DataSpecific\ASN\AsnRinchemExcelLoader.cs" />
+    <Compile Include="DataSpecific\OBO\OboObject.cs" />
+    <Compile Include="DataSpecific\OBO\OboRinchemExcelLoader.cs" />
+    <Compile Include="DataSpecific\OBO\OboRinchemJsonLoader.cs" />
     <Compile Include="UiSpecific\asnIntegratorUI.xaml.cs">
       <DependentUpon>asnIntegratorUI.xaml</DependentUpon>
     </Compile>
     <Compile Include="APImanager.cs" />
-    <Compile Include="DataSpecific\AsnObject.cs" />
+    <Compile Include="DataSpecific\ASN\AsnObject.cs" />
     <Compile Include="DataSpecific\DataLoader.cs" />
     <Compile Include="ApiSpecific\Profiles.cs" />
-    <Compile Include="DataSpecific\RinchemJsonLoader.cs" />
+    <Compile Include="DataSpecific\ASN\AsnRinchemJsonLoader.cs" />
     <Compile Include="ApiSpecific\SalesForceConnection.cs" />
     <Compile Include="UiSpecific\ConsoleLogger.cs" />
     <Page Include="UiSpecific\asnIntegratorUI.xaml">
@@ -129,9 +132,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataSpecific\ASN\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -16,7 +16,6 @@ namespace RinchemApiIntegrationConsole
     {
         private Credentials credentials;
         private string CustomAPI    = ConfigurationManager.AppSettings["CustomAPI"];
-        private string httpVerb     = ConfigurationManager.AppSettings["httpVerb"];
 
         private AuthenticationClient auth;
         private HttpRequestMessage request;
@@ -66,8 +65,22 @@ namespace RinchemApiIntegrationConsole
         }
 
 
-        public Boolean tryApiSetup( DataObject obj )
+        public Boolean tryApiSetup( DataObject obj , String httpVerb, String apiType)
         {
+            string CustomAPI = "";
+            switch (apiType)
+            {
+                case "ASN":
+                    CustomAPI = "/services/apexrest/v1/ASN__c";
+                    break;
+                case "OBO":
+                    CustomAPI = "/services/apexrest/v1/OBO__c";
+                    break;
+                default:
+                    ConsoleLogger.log("Couldn't find the specified API type");
+                    return false;
+            }
+
             //  auth.* tokens are populated subsequent to a succesful UserNamePasswrdAsync() call
             //  Used to access SalesForce on the now open connection
             string oauthToken = auth.AccessToken;
@@ -117,9 +130,10 @@ namespace RinchemApiIntegrationConsole
                 try
                 {
                     SalesForceResponse resultObject = JsonConvert.DeserializeObject<SalesForceResponse>(result);
-                    ConsoleLogger.log(resultObject.status);
-                    ConsoleLogger.log(resultObject.message);
-                    ConsoleLogger.log(resultObject.asn_order_num);
+                    ConsoleLogger.log("|| Status   : "+resultObject.status);
+                    ConsoleLogger.log("|| Message  : "+resultObject.message);
+                    if (resultObject.asn_order_num != null) ConsoleLogger.log("|| ASN Order Num  : " + resultObject.asn_order_num);
+                    if (resultObject.obo_order_num != null) ConsoleLogger.log("|| OBO Order Num  : " + resultObject.obo_order_num);
                     //ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.asn));
                     //resultObject.lineItems.ForEach(x => ConsoleLogger.log(JsonConvert.SerializeObject(x)));
                     if (resultObject.status == "Error") return false;
@@ -157,6 +171,7 @@ namespace RinchemApiIntegrationConsole
         public String status;
         public String message;
         public String asn_order_num;
+        public String obo_order_num;
         public List<Object> lineItems;
         public Object asn;
     }

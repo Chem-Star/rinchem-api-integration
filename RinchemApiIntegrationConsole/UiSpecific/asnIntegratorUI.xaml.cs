@@ -400,6 +400,54 @@ namespace RinchemApiIntegrationConsole
             field.Value = item.Text;
         }
 
+
+
+        //Action to take when the API dropdown is loaded initially
+        private void on_init_api_selector(object sender, RoutedEventArgs e)
+        {
+            // ... A List.
+            List<string> data = new List<string>();
+
+            data.Add("ASN");
+            data.Add("OBO");
+
+            var comboBox = sender as ComboBox;
+            comboBox.ItemsSource = data;
+            comboBox.SelectedIndex = 0;
+
+            on_new_api_selected(comboBox, null);
+            UpdateLayout();
+        }
+        //Action to take when a new API is selected
+        private void on_new_api_selected(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            ComboBox ApiSelector = sender as ComboBox;
+            apiManager.setApi((String)ApiSelector.SelectedValue);
+        }
+        //Action to take when the LoadProfile dropdown is loaded initially
+        private void on_init_http_verb_selector(object sender, RoutedEventArgs e)
+        {
+            // ... A List.
+            List<string> data = new List<string>();
+
+            data.Add("POST");
+            data.Add("PATCH");
+
+            var comboBox = sender as ComboBox;
+            comboBox.ItemsSource = data;
+            comboBox.SelectedIndex = 0;
+
+            on_new_http_verb_selected(comboBox, null);
+            UpdateLayout();
+        }
+        //Action to take when a new Data Loader is selected
+        private void on_new_http_verb_selected(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            ComboBox HttpVerbSelector = sender as ComboBox;
+            apiManager.setVerb((String)HttpVerbSelector.SelectedValue);
+        }
+
+
         //Reset the login related buttons whenever a login field is changed
         //Salesforce connection is no longer valid with the new credentials
         private void login_related_field_changed(object sender, RoutedEventArgs e)

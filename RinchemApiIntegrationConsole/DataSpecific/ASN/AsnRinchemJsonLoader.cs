@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace RinchemApiIntegrationConsole
+namespace RinchemApiIntegrationConsole.ASN
 {
     // Simple implementation of the data loader
-    class RinchemJsonLoader : DataLoader
+    class AsnRinchemJsonLoader : DataLoader
     {
         private String filepath { get; set; }
         private String rawData { get; set; }

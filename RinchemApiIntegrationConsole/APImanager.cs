@@ -1,4 +1,6 @@
-﻿using RinchemApiIntegrationConsole.UiSpecific;
+﻿using RinchemApiIntegrationConsole.ASN;
+using RinchemApiIntegrationConsole.OBO;
+using RinchemApiIntegrationConsole.UiSpecific;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,14 +14,16 @@ namespace RinchemApiIntegrationConsole
     /// </summary>
     class APImanager
     {
-        private List<DataLoader> dataLoaders = new List<DataLoader>() { new RinchemExcelLoader(), new RinchemJsonLoader() };
+        private List<DataLoader> dataLoaders = new List<DataLoader>() { new OboRinchemExcelLoader(), new OboRinchemJsonLoader(),
+                                                                        new AsnRinchemExcelLoader(), new AsnRinchemJsonLoader() };
 
         private Profiles profiles { get; set; }                     // Contains all prior saved Profiles
         private Credentials credentials { get; set; }               // The login details used to connect to SalesForce
         private SalesForceConnection sfConnection { get; set; }     // Manages the salesforce connection
         private DataLoader dataLoader { get; set; }                 // Interface responsible for loading and converting data ***USER MUST IMPLEMENT THEIR OWN***
-        private DataObject dataObject { get; set; }                     // Interface responsible for defining the model type
-
+        private DataObject dataObject { get; set; }                 // Interface responsible for defining the model type
+        private String httpVerb { get; set; }                       // The verb we use during the API call
+        private String apiType { get; set; }                            // The api that we are interested in calling
 
         // Constructor -- needs ui so that it can update the logbox
         public APImanager()
@@ -79,6 +83,16 @@ namespace RinchemApiIntegrationConsole
         {
             return profiles.findProfile(uid);
         }
+        // Sets the httpVerb that is used during the api call
+        public void setVerb(String verb)
+        {
+            httpVerb = verb;
+        }
+        // Sets the api type that is used during the api call
+        public void setApi(String api)
+        {
+            apiType = api;
+        }
 
         // Trys to login to salesforce with the currently loaded credentials
         public async Task<Boolean> testCredentials()
@@ -134,7 +148,7 @@ namespace RinchemApiIntegrationConsole
         public Boolean testApiSetup()
         {
             if (sfConnection == null || dataObject == null) return false;
-            bool success = sfConnection.tryApiSetup(dataObject);
+            bool success = sfConnection.tryApiSetup(dataObject, httpVerb, apiType);
 
             if (success)
             {

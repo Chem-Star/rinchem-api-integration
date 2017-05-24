@@ -8,12 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;       //Microsoft Excel 14 object in references-> COM tab
 
-namespace RinchemApiIntegrationConsole
+namespace RinchemApiIntegrationConsole.OBO
 {
-    class RinchemExcelLoader : DataLoader
+    class OboRinchemExcelLoader : DataLoader
     {
-        Field dbLocation = new Field() { Name = "FileLocation", Value= "C:/Users/jdenning/Desktop/ASN_MasterFile.xlsx" };
-        Field shipID = new Field() { Name = "Ship_ID", Value = "" };
+        Field dbLocation = new Field() { Name = "FileLocation", Value= "C:/Development/OBO_Excel_Format.xlsx" };
+        Field poNum = new Field() { Name = "PO Number", Value = "123456" };
 
         List<List<String>> rawData;
         
@@ -22,7 +22,7 @@ namespace RinchemApiIntegrationConsole
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         public String GetUniqueName()
         {
-            return "ASN - Rinchem Excel Loader";
+            return "OBO - Rinchem Excel Loader";
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +31,7 @@ namespace RinchemApiIntegrationConsole
         public List<Field> GetCustomFields()
         {
             //Tell the user interface what custom fields to display
-            List<Field> fields = new List<Field>() { dbLocation, shipID };
+            List<Field> fields = new List<Field>() { dbLocation, poNum };
             return fields;
         }
 
@@ -55,11 +55,12 @@ namespace RinchemApiIntegrationConsole
                 List<String> headers = readRow(xlRange, 1);
                 rawData.Add(headers);
 
-                //Finds the first and last row containing the specified shipping id
-                int[] rowRange = FindShipIdRange(xlRange, shipID.Value);
+                //Finds the first and last row containing the specified PoNum
+                int[] rowRange = FindPoNumRange(xlRange, poNum.Value);
 
-                int rowFirst = rowRange[0];     //First row containing the shipping id
-                int rowLast = rowRange[1];      //Last row containing the shipping id
+                int rowFirst = rowRange[0];     //First row containing the po num
+                int rowLast = rowRange[1];      //Last row containing the po num
+                if (rowLast + rowFirst <= 0) return false;
 
                 //Iterate over each row, pulling it in as an Array of strings
                 // then add each row to the rawData Array
@@ -135,9 +136,9 @@ namespace RinchemApiIntegrationConsole
             if (rawData == null) return false;          //Ensure that our rawData was initialized
             if (rawData.Count < 1) return false;        //Ensure that our rawData isn't empty
             if (rawData.ElementAt(0).Count < 1) return false;   //Ensure that our first row isn't empty
-            if (rawData.ElementAt(0).ElementAt(0) != "Date")    //Ensure that the first cell we brought in has value "Date"
+            if (rawData.ElementAt(0).ElementAt(0) != "Order_Date")    //Ensure that the first cell we brought in has value "Date"
             {
-                ConsoleLogger.log("FirstColumn should be 'Date' found: '" + rawData.ElementAt(0).ElementAt(0) + "'");
+                ConsoleLogger.log("FirstColumn should be 'Order_Date' found: '" + rawData.ElementAt(0).ElementAt(0) + "'");
                 return false;
             }
             return true;
@@ -148,52 +149,36 @@ namespace RinchemApiIntegrationConsole
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         public DataObject ConvertDataToObject()
         {
-            AsnObject asnObject = new AsnObject();          //Initialize our ASN object
-            asnObject.rqst = new Request();                 //Initialize the request object
+            OboObject oboObject = new OboObject();          //Initialize our ASN object
+            oboObject.rqst = new Request();                 //Initialize the request object
 
-            asnObject.rqst.asn = populateAsn();             //Reformat data for the ASN info object
-            asnObject.rqst.lineItems = populateLineItems(); //Reformat data for each of our line items
+            oboObject.rqst.obo = populateObo();             //Reformat data for the ASN info object
+            oboObject.rqst.lineItems = populateLineItems(); //Reformat data for each of our line items
 
-            return asnObject;
+            return oboObject;
         }
 
-        public ASN populateAsn()
+        public OBO populateObo()
         {
-            ASN asn                             = new ASN();
-            asn.Name                          = "";
-            asn.Action__c                     = "";
-            asn.Message_Id__c                 = "";
-            asn.Date_ASN_Sent__c                = getDateItem( 1, "Date"                       );
-            asn.Supplier_Name__c                = getStringItem( 1, "Sup_Name"                   );
-            asn.Rinchem_Supplier_Id__c          = getStringItem(1, "Origin_ID");
-            asn.ASN_Recipient_Name__c           = getStringItem( 1, "ASN_Recpt_ #"               );
-            asn.ASN_Recipient_Id__c             = getStringItem( 1, "ASN_Recpt_ID"               );
-            asn.Template_Version__c             = getStringItem( 1, "Templt_Ver"                 );
-            asn.Estimated_Ship_Date__c          = getDateItem( 1, "Est_Ship_Date"              );
-            asn.Estimated_Arrival_Date__c       = getDateItem( 1, "Est_Arriv_Date"             );
-            asn.Shipment_Id__c                  = getStringItem( 1, "Ship_ID"                    );
-            asn.BOL_Number__c                   = getStringItem( 1, "BOL_#"                      );
-            asn.Ship_From_Supplier__c           = getStringItem( 1, "Ship_Frm_Sup"               );
-            asn.Order_Type__c                   = getStringItem( 1, "Ord_Ty_(PO)"                );
-            asn.Order_Number__c               = getStringItem(1, "BOL_#");
-            asn.Origin_Id__c                    = getStringItem( 1, "Origin_ID"                  );
-            asn.Origin_Street_Address__c        = getStringItem( 1, "Origin_Address"             );
-            asn.Origin_City__c                  = getStringItem( 1, "Origin_City"                );
-            asn.Origin_State__c                 = getStringItem( 1, "Origin_State"               );
-            asn.Origin_Postal_Code__c           = getStringItem( 1, "Origin_Zip_Code"            );
-            asn.Origin_Country__c               = getStringItem( 1, "Origin_Cntry"               );
-            asn.Destination_Name__c             = getStringItem( 1, "Dest_Nm"                    );
-            asn.Destination_Warehouse_Code__c   = getStringItem( 1, "Dest_WHSE_Cd"               );
-            asn.Destination_Address__c          = getStringItem( 1, "Dest_Address"               );
-            asn.Destination_City__c             = getStringItem( 1, "Dest_City"                  );
-            asn.Destination_State__c            = getStringItem( 1, "Dest_State"                 );
-            asn.Destination_Postal_Code__c      = getStringItem( 1, "Dest_Zip"                   );
-            asn.Destination_Country__c          = getStringItem( 1, "Dest_Country"               );
-            asn.Carrier_Id__c                   = getStringItem( 1, "Carrier_ID"                 );
-            asn.Carrier_Name__c                 = getStringItem( 1, "Carrier_Name"               );
-            asn.Purchase_Order_Number__c        = getStringItem( 1, "PO_#"                       );
-            asn.Product_Owner_Id__c             = getStringItem(1, "Prod_Ownr_ID"                );
-            return asn;
+            OBO obo                           = new OBO();
+            obo.Name                          = "";
+            obo.Action__c                     = "";
+            obo.Message_Id__c                 = "";
+            obo.Order_Date__c                         = getDateItem( 1, "Order_Date"                  );
+            obo.Rinchem_Supplier_Id__c                = getStringItem( 1, "Rinchem_Supplier_Id"          );
+            obo.Purchase_Order_Number__c              = getStringItem( 1, "Purchase_Order_Number"        );
+            obo.Ship_To_Customer__c                   = getStringItem( 1, "Ship_To_Customer_Code"        );
+            obo.Ship_To_Name__c                       = getStringItem( 1, "Ship_To_Name"                 );
+            obo.Freight_Payment_Terms_Type__c         = getStringItem( 1, "Freight_Payment_Terms_Type"   );
+            obo.Bill_To_Customer_Code__c              = getStringItem( 1, "Bill_To_Customer_Code"        );
+            obo.Bill_To_Name__c                       = getStringItem( 1, "Bill_To_Name"                 );
+            obo.Desired_Delivery_Date__c              = getDateItem( 1, "Desired_Delivery_Date"        );
+            obo.Carrier_Service__c                    = getStringItem( 1, "Carrier_Service"              );
+            obo.Carrier_Name__c                       = getStringItem( 1, "Carrier_Name"                 );
+            obo.From_Warehouse_Code__c                = getStringItem( 1, "From_Warehouse_Code"          );
+            obo.Order_Type__c                         = getStringItem( 1, "Order_Type"                   );
+            obo.Product_Owner_Id__c                   = getStringItem( 1, "Product_Owner_Id"             );
+            return obo;
         }
 
         private List<LineItems> populateLineItems()
@@ -204,15 +189,13 @@ namespace RinchemApiIntegrationConsole
             {
                 LineItems lineItem = new LineItems();
 
-                lineItem.Name                               = getStringItem( i, "Line_Item_#"               );
-                lineItem.Vendor_Part_Number__c              = getStringItem( i, "Vendor_PN"                 );
-                lineItem.Product_Description__c             = getStringItem( i, "Prod_Descrip_"             );
-                lineItem.Product_Lot_Number__c              = getStringItem( i, "Lot_Num"                   );
-                lineItem.Product_Expiration_Date__c         = getDateItem( i, "Exprire_Date"              );
-                lineItem.Quantity__c                        = getStringItem( i, "Quantity"                  );
-                lineItem.Unit_of_Measure__c                 = getStringItem( i, "UOM"                       );
-                lineItem.Hold_Code__c                       = getStringItem( i, "Hold_Code"                 );
-                lineItem.Serial_Number__c                   = getStringItem( i, "SN"                        );
+                lineItem.Name                       = getStringItem( i, "Line_Item_#"                      );
+                lineItem.Hold_Code__c               = getStringItem( i, "Hold_Code"                          );
+                lineItem.Inventory_Detail__c        = getStringItem( i, "Inventory_Detail"                   );
+                lineItem.Lot_Number__c              = getStringItem( i, "Lot_Number"                         );
+                lineItem.Rinchem_Part_Number__c     = getStringItem( i, "Rinchem_Part_Number"                );
+                lineItem.Quantity__c                = getStringItem( i, "Quantity"                           );
+                lineItem.Unit_of_Measure__c         = getStringItem( i, "Unit_of_Measure"                    );
 
                 lineItems.Add(lineItem);
             }
@@ -251,30 +234,30 @@ namespace RinchemApiIntegrationConsole
         }
 
 
-        //Searches the excel sheet for all rows that contain the given tShipID
+        //Searches the excel sheet for all rows that contain the given tPoNum
         // returns the first row using the id in int[0] and the last row in int[1]
-        private int[] FindShipIdRange(Excel.Range xlRange, String tShipID)
+        private int[] FindPoNumRange(Excel.Range xlRange, String tPoNum)
         {
             //Simple trackers
             Excel.Range currentFind = null;
             Excel.Range firstFind = null;
             Excel.Range lastFind = null;
 
-            //Find which column our Ship_IDs are in
+            //Find which column our PO_Nums are in
             List<String> rowData = rawData.ElementAt(0);
             if (rowData == null) return null;
-            int colNum = rawData.ElementAt(0).FindIndex(col => col == "Ship_ID");
+            int colNum = rawData.ElementAt(0).FindIndex(col => col == "Purchase_Order_Number");
             char colChar = (char) ('A' + colNum);
 
             //Figure out how many rows are in our excel sheet
             int rows = xlRange.Rows.Count;
 
-            // Limit our search range to the Ship_ID column
-            Excel.Range ShipIDsRange = xlRange.get_Range(""+colChar+""+1, ""+colChar+""+rows);
-            // Find the first item in the range that contains the Ship_ID
+            // Limit our search range to the PO_Num column
+            Excel.Range PoNumsRange = xlRange.get_Range(""+colChar+""+1, ""+colChar+""+rows);
+            // Find the first item in the range that contains the PO_Num
             // You should specify all these parameters every time you call this method,
             // since they can be overridden in the Excel user interface. 
-            currentFind = ShipIDsRange.Find(tShipID, Type.Missing,
+            currentFind = PoNumsRange.Find(tPoNum, Type.Missing,
                 Excel.XlFindLookIn.xlValues, Excel.XlLookAt.xlPart,
                 Excel.XlSearchOrder.xlByRows, Excel.XlSearchDirection.xlNext, false,
                 Type.Missing, Type.Missing);
@@ -286,7 +269,7 @@ namespace RinchemApiIntegrationConsole
                 {
                     firstFind = currentFind;
                 }
-                // Look for the next item in the range that has the ShipID
+                // Look for the next item in the range that has the PO_Num
                 // IF the next item found is the first item then we are done
                 else if (currentFind.get_Address(Excel.XlReferenceStyle.xlA1)
                       == firstFind.get_Address(Excel.XlReferenceStyle.xlA1))
@@ -296,9 +279,14 @@ namespace RinchemApiIntegrationConsole
 
                 // Keep track of this find and then continue the search with the nextFind
                 lastFind = currentFind;
-                currentFind = ShipIDsRange.FindNext(currentFind);
+                currentFind = PoNumsRange.FindNext(currentFind);
             }
 
+            if(firstFind == null || lastFind == null)
+            {
+                ConsoleLogger.log("No Matching POs Found");
+                return new int[] { 0, 0 };
+            }
             int start = firstFind.Row;
             int end = lastFind.Row;
             ConsoleLogger.log("Range: " + start + "-" + end);
