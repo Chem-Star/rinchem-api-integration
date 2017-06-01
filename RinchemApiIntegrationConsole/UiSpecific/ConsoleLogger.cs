@@ -1,4 +1,5 @@
-﻿using System;
+﻿using asnIntegratorConsole.UiSpecific;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,18 +9,34 @@ namespace RinchemApiIntegrationConsole.UiSpecific
 {
     static class ConsoleLogger
     {
-        private static asnIntegratorUI integratorUi;
+        private static DebugConsole debugUi;
+        private static ApiUserConsole consoleUi;
         private static String content;
 
-        public static void initialize(asnIntegratorUI integratorUi)
+        public static void initialize(DebugConsole debugUi)
         {
-            ConsoleLogger.integratorUi = integratorUi;
+            ConsoleLogger.debugUi = debugUi;
+        }
+        public static void initialize(ApiUserConsole consoleUi)
+        {
+            ConsoleLogger.consoleUi = consoleUi;
         }
 
         public static void log(String message)
         {
             content += message + "\n";
-            integratorUi.updateLogBox(content);
+            if (debugUi != null)
+            {
+                debugUi.updateLogBox(content);
+            }
+            if (consoleUi != null)
+            {
+                consoleUi.updateLogBox(content);
+            }
+        }
+        public static String getContent()
+        {
+            return content;
         }
     }
 }

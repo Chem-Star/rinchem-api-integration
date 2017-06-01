@@ -4,11 +4,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RinchemApiIntegrationConsole
 {
     // Simple interface that customers must implement to use the ASN Integrator
-    interface DataLoader
+    public interface DataLoader
     {
         /// <summary>
         /// Implementer must implement this.
@@ -48,5 +49,7 @@ namespace RinchemApiIntegrationConsole
     {
         public string Name { get; set; }  //Name for the field label
         public string Value { get; set; } //The return value entered into the field
+
+        public FrameworkElement element { get; set; }
     }
 }

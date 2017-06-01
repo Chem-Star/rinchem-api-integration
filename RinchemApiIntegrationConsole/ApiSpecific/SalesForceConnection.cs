@@ -20,12 +20,28 @@ namespace RinchemApiIntegrationConsole
         private AuthenticationClient auth;
         private HttpRequestMessage request;
 
+        private Boolean isConnected = false;
+
         public SalesForceConnection(Credentials credentials)
         {
             this.credentials = credentials;
 
             // Sets the security protocol for all ServicePoint objects managed by the ServicePointManager
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        }
+
+        public Boolean isConnectedWithCredentials(Credentials newCredentials)
+        {
+            if (!isConnected) return false;
+
+            if (credentials.Username != newCredentials.Username)                return false;
+            if (credentials.Password != newCredentials.Password)                return false;
+            if (credentials.SecurityToken != newCredentials.SecurityToken)      return false;
+            if (credentials.ConsumerKey != newCredentials.ConsumerKey)          return false;
+            if (credentials.ConsumerSecret != newCredentials.ConsumerSecret)    return false;
+            if (credentials.IsSandboxUser != newCredentials.IsSandboxUser)      return false;
+
+            return true;
         }
 
         public async Task<Boolean> tryToConnect()
@@ -61,6 +77,7 @@ namespace RinchemApiIntegrationConsole
                 return false;
             }
 
+            isConnected = true;
             return true;
         }
 
@@ -130,12 +147,19 @@ namespace RinchemApiIntegrationConsole
                 try
                 {
                     SalesForceResponse resultObject = JsonConvert.DeserializeObject<SalesForceResponse>(result);
-                    ConsoleLogger.log("|| Status   : "+resultObject.status);
-                    ConsoleLogger.log("|| Message  : "+resultObject.message);
-                    if (resultObject.asn_order_num != null) ConsoleLogger.log("|| ASN Order Num  : " + resultObject.asn_order_num);
-                    if (resultObject.obo_order_num != null) ConsoleLogger.log("|| OBO Order Num  : " + resultObject.obo_order_num);
-                    //ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.asn));
-                    //resultObject.lineItems.ForEach(x => ConsoleLogger.log(JsonConvert.SerializeObject(x)));
+                    ConsoleLogger.log("|| Status: "+resultObject.status);
+                    ConsoleLogger.log("|| Message: "+resultObject.message);
+                    if (resultObject.asn_order_num != null)
+                    {
+                        ConsoleLogger.log("|| ASN Order Num: " + resultObject.asn_order_num);
+                        ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.asn));
+                    }
+                    if (resultObject.obo_order_num != null)
+                    {
+                        ConsoleLogger.log("|| OBO Order Num: " + resultObject.obo_order_num);
+                        ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.obo));
+                    }
+                    resultObject.lineItems.ForEach(x => ConsoleLogger.log(JsonConvert.SerializeObject(x)));
                     if (resultObject.status == "Error") return false;
                     else return true;
                 }
@@ -174,6 +198,7 @@ namespace RinchemApiIntegrationConsole
         public String obo_order_num;
         public List<Object> lineItems;
         public Object asn;
+        public Object obo;
     }
 
 }

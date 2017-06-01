@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RinchemApiIntegrationConsole
 {
-    interface DataObject
+    public interface DataObject
     {
         Boolean validate();
     }

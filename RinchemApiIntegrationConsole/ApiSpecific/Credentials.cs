@@ -13,7 +13,7 @@ namespace RinchemApiIntegrationConsole
     ///  Simple structural class to hold credential data that is necessary to login to Salesforce.               ///
     ///  Also, provides methods to save and load (non password) credentials to an external file.                 ///
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    class Credentials
+    public class Credentials
     {
         // In Salesforce -> My Settings (under username) -> Personal -> Reset My Security Token -> Check Email
         public string SecurityToken     { get; }

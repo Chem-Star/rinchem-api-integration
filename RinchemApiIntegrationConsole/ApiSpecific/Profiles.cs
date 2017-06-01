@@ -20,7 +20,7 @@ namespace RinchemApiIntegrationConsole
 
         public Profiles()
         {
-            PROFILES = readProfiles();
+            PROFILES = readProfilesFromConfig();
         }
 
         public void setProfilesPath(String path)
@@ -34,19 +34,13 @@ namespace RinchemApiIntegrationConsole
         }
 
 
-        public List<Profile> readProfiles()
+        public List<Profile> readProfilesFromConfig()
         {
-            Console.Write("maybe baby");
-            String rawData;
             List<Profile> profiles;
             try
             {
-                using (StreamReader r = new StreamReader(profilesPath))
-                {
-                    rawData = r.ReadToEnd();
-                }
-                profiles = JsonConvert.DeserializeObject<List<Profile>>(rawData);
-                ConsoleLogger.log("Loaded Profiles");
+                String profilesString = ConfigurationManager.AppSettings["Profiles"];
+                profiles = JsonConvert.DeserializeObject<List<Profile>>(profilesString);
             }
             catch (Exception e)
             {
@@ -56,6 +50,48 @@ namespace RinchemApiIntegrationConsole
             }
 
             return profiles;
+        }
+
+
+        public List<Profile> readProfiles()
+        {
+            String rawData;
+            List<Profile> profiles;
+            try
+            {
+                using (StreamReader r = new StreamReader(profilesPath))
+                {
+                    rawData = r.ReadToEnd();
+                }
+                profiles = JsonConvert.DeserializeObject<List<Profile>>(rawData);
+            }
+            catch (Exception e)
+            {
+                ConsoleLogger.log("Couldn't Load Profiles");
+                ConsoleLogger.log(e.ToString());
+                profiles = new List<Profile>();
+            }
+
+            return profiles;
+        }
+
+        public void saveProfilesInConfig()
+        {
+            String rawData = JsonConvert.SerializeObject(PROFILES);
+            try
+            {
+                Configuration oConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                oConfig.AppSettings.Settings["Profiles"].Value = rawData;
+                oConfig.Save(ConfigurationSaveMode.Full);
+                ConfigurationManager.RefreshSection("appSettings");
+            }
+            catch (Exception e)
+            {
+                ConsoleLogger.log("Couldn't Update Profiles");
+                ConsoleLogger.log(e.ToString());
+                return;
+            }
+            ConsoleLogger.log("Updated Profiles In Config");
         }
 
         public void saveProfiles()
@@ -74,29 +110,37 @@ namespace RinchemApiIntegrationConsole
                 ConsoleLogger.log("Couldn't Update Profiles");
                 return;
             }
-            ConsoleLogger.log("Updated Profiles");
+            ConsoleLogger.log("Updated Profiles In File");
         }
 
         public void saveProfile(Profile profile)
         {
-            int i = 1;
-            String profName = profile.ProfileName;
-            if (findProfile(profName) != null)
+            String profId = profile._id;
+
+            if (findProfileByName(profile.ProfileName) != null && 
+                findProfileByName(profile.ProfileName)._id != profId)
             {
-                deleteProfile(profName);
-                //profName = profile.ProfileName + "_" + i;
-                //i++;
+                String newName = profile.ProfileName;
+                int i = 0;
+                while (findProfileByName(newName) != null)
+                {
+                    i++;
+                    newName = profile.ProfileName + "_" + i;
+                }
+                profile.ProfileName = newName;
             }
 
-                profile.ProfileName = profName;
-            PROFILES.Add(profile);
-            ConsoleLogger.log("Added Profile");
-            saveProfiles();
+            if (findProfile1(profId) == null)
+            {
+                PROFILES.Add(profile);
+            }
+
+            saveProfilesInConfig();
         }
 
-        public void deleteProfile(String profilename)
+        public void deleteProfile(String uid)
         {
-            Profile prof = findProfile(profilename);
+            Profile prof = findProfile1(uid);
             if(prof != null)
             {
                 PROFILES.Remove(prof);
@@ -105,17 +149,22 @@ namespace RinchemApiIntegrationConsole
             {
                 ConsoleLogger.log("Couldn't Remove Profile");
             }
-            saveProfiles();
+            saveProfilesInConfig();
         }
 
-        public Profile findProfile(String profileName)
+        public Profile findProfile1(String uid)
         {
-            return PROFILES.Find(x => x.ProfileName == profileName);
+            return PROFILES.Find(x => x._id == uid);
+        }
+        public Profile findProfileByName(String name)
+        {
+            return PROFILES.Find(x => x.ProfileName == name);
         }
     }
 
-    class Profile
+    public class Profile
     {
+        public String _id               { get; private set; }
         public String ProfileName       { get; set; }
         public String Username          { get; set; }
         public String SecurityToken     { get; set; }
@@ -123,13 +172,22 @@ namespace RinchemApiIntegrationConsole
         public String ConsumerSecret    { get; set; }
         public Boolean IsSandboxUser    { get; set; }
 
-        public List<LoaderInfo> CustomFields { get; set; }
-
         public Profile()
         {
-
+            _id = Guid.NewGuid().ToString();
         }
-        public Profile(string profile_name, string username, string consumer_key, string consumer_secret, string security_token, Boolean is_sandbox_user, List<LoaderInfo> customFields)
+        public Profile(string uid, string profile_name, string username, string consumer_key, string consumer_secret, string security_token, Boolean is_sandbox_user)
+        {
+            this._id = (uid != null) ? uid : Guid.NewGuid().ToString();
+            this.ProfileName = profile_name;
+            this.Username = username;
+            this.ConsumerKey = consumer_key;
+            this.ConsumerSecret = consumer_secret;
+            this.SecurityToken = security_token;
+            this.IsSandboxUser = is_sandbox_user;
+        }
+
+        internal void updateFields(string profile_name, string username, string consumer_key, string consumer_secret, string security_token, Boolean is_sandbox_user)
         {
             this.ProfileName = profile_name;
             this.Username = username;
@@ -137,11 +195,10 @@ namespace RinchemApiIntegrationConsole
             this.ConsumerSecret = consumer_secret;
             this.SecurityToken = security_token;
             this.IsSandboxUser = is_sandbox_user;
-            this.CustomFields = customFields;
         }
     }
 
-    class LoaderInfo
+    public class LoaderInfo
     {
         public String DataLoaderName { get; set; }
         public List<Field> CustomFields { get; set; }

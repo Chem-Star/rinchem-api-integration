@@ -6,14 +6,16 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using Excel = Microsoft.Office.Interop.Excel;       //Microsoft Excel 14 object in references-> COM tab
 
 namespace RinchemApiIntegrationConsole.OBO
 {
     class OboRinchemExcelLoader : DataLoader
     {
-        Field dbLocation = new Field() { Name = "FileLocation", Value= "C:/Development/OBO_Excel_Format.xlsx" };
-        Field poNum = new Field() { Name = "PO Number", Value = "123456" };
+        Field dbLocation = new Field() { Name = "FileLocation", Value= "" };
+        Field poNum = new Field() { Name = "PO Number", Value = "" };
 
         List<List<String>> rawData;
         
@@ -30,9 +32,32 @@ namespace RinchemApiIntegrationConsole.OBO
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         public List<Field> GetCustomFields()
         {
+            Button location = new Button();
+            location.Content = dbLocation.Value;
+            location.Click += location_click;
+            dbLocation.element = location;
+
             //Tell the user interface what custom fields to display
             List<Field> fields = new List<Field>() { dbLocation, poNum };
             return fields;
+        }
+
+        private void location_click(object sender, RoutedEventArgs e)
+        {
+            // Configure open file dialog box
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+            // Show open file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                // Open document
+                string filename = dlg.FileName;
+                dbLocation.Value = filename;
+                ((Button)sender).Content = filename;
+            }
         }
 
 
@@ -41,67 +66,70 @@ namespace RinchemApiIntegrationConsole.OBO
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         public async Task<bool> LoadData()
         {
-            rawData = new List<List<String>>();
-            try
-            {
-                //Create COM Objects. Create a COM object for everything that is referenced
-                Excel.Application xlApp = new Excel.Application();
-                Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(dbLocation.Value);
-                //Excel isn't 0 based
-                Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
-                Excel.Range xlRange = xlWorksheet.UsedRange;
+           return await Task.Run(() =>
+           {
+               rawData = new List<List<String>>();
+               try
+               {
+                   //Create COM Objects. Create a COM object for everything that is referenced
+                   Excel.Application xlApp = new Excel.Application();
+                   Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(dbLocation.Value);
+                   //Excel isn't 0 based
+                   Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
+                   Excel.Range xlRange = xlWorksheet.UsedRange;
 
-                //Get the column headers, set them as the first entry in our rawData array
-                List<String> headers = readRow(xlRange, 1);
-                rawData.Add(headers);
+                   //Get the column headers, set them as the first entry in our rawData array
+                   List<String> headers = readRow(xlRange, 1);
+                   rawData.Add(headers);
 
-                //Finds the first and last row containing the specified PoNum
-                int[] rowRange = FindPoNumRange(xlRange, poNum.Value);
+                   //Finds the first and last row containing the specified PoNum
+                   int[] rowRange = FindPoNumRange(xlRange, poNum.Value);
 
-                int rowFirst = rowRange[0];     //First row containing the po num
-                int rowLast = rowRange[1];      //Last row containing the po num
-                if (rowLast + rowFirst <= 0) return false;
+                   int rowFirst = rowRange[0];     //First row containing the po num
+                   int rowLast = rowRange[1];      //Last row containing the po num
+                   if (rowLast + rowFirst <= 0) return false;
 
-                //Iterate over each row, pulling it in as an Array of strings
-                // then add each row to the rawData Array
-                for (int i=rowFirst; i<=rowLast; i++)
-                {
-                    if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 1].Value2 != null)
-                    {
-                        List<String> rowData = readRow(xlRange, i);
-                        rawData.Add(rowData);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                //cleanup
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                   //Iterate over each row, pulling it in as an Array of strings
+                   // then add each row to the rawData Array
+                   for (int i = rowFirst; i <= rowLast; i++)
+                   {
+                       if (xlRange.Cells[i, 1] != null && xlRange.Cells[i, 1].Value2 != null)
+                       {
+                           List<String> rowData = readRow(xlRange, i);
+                           rawData.Add(rowData);
+                       }
+                       else
+                       {
+                           break;
+                       }
+                   }
+                   //cleanup
+                   GC.Collect();
+                   GC.WaitForPendingFinalizers();
 
-                //rule of thumb for releasing com objects:
-                //  never use two dots, all COM objects must be referenced and released individually
-                //  ex: [somthing].[something].[something] is bad
+                   //rule of thumb for releasing com objects:
+                   //  never use two dots, all COM objects must be referenced and released individually
+                   //  ex: [somthing].[something].[something] is bad
 
-                //release com objects to fully kill excel process from running in the background
-                Marshal.ReleaseComObject(xlRange);
-                Marshal.ReleaseComObject(xlWorksheet);
+                   //release com objects to fully kill excel process from running in the background
+                   Marshal.ReleaseComObject(xlRange);
+                   Marshal.ReleaseComObject(xlWorksheet);
 
-                //close and release
-                xlWorkbook.Close();
-                Marshal.ReleaseComObject(xlWorkbook);
+                   //close and release
+                   xlWorkbook.Close();
+                   Marshal.ReleaseComObject(xlWorkbook);
 
-                //quit and release
-                xlApp.Quit();
-                Marshal.ReleaseComObject(xlApp);
-            }
-            catch (Exception e)
-            {
-                ConsoleLogger.log(e.ToString());
-                return false;
-            }
-            return true;
+                   //quit and release
+                   xlApp.Quit();
+                   Marshal.ReleaseComObject(xlApp);
+               }
+               catch (Exception e)
+               {
+                   ConsoleLogger.log(e.ToString());
+                   return false;
+               }
+               return true;
+           });
         }
 
         // Read the specified row i from the excel sheet into a 1 dimensional string array

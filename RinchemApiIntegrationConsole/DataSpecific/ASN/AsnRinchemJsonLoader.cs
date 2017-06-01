@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows;
 
 namespace RinchemApiIntegrationConsole.ASN
 {
@@ -13,13 +15,8 @@ namespace RinchemApiIntegrationConsole.ASN
         private String filepath { get; set; }
         private String rawData { get; set; }
 
-        private Field fileLocation = new Field() { Name = "FileLocation" , Value = "c:/Development/CustomRestPayload.json" };
+        private Field fileLocation = new Field() { Name = "FileLocation" , Value = "" };
 
-
-        public void setFilePath(String path)
-        {
-            filepath = path;
-        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///         **DEFINE UNIQUE NAME**              CUSTOMER MUST IMPLEMENT                                      ///
@@ -35,11 +32,33 @@ namespace RinchemApiIntegrationConsole.ASN
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         public List<Field> GetCustomFields()
         {
-            List<Field> fields = new List<Field>();
+            Button location = new Button();
+            location.Content = fileLocation.Value;
+            location.Click += location_click;
+            fileLocation.element = location;
 
+            List<Field> fields = new List<Field>();
             fields.Add(fileLocation);
 
             return fields;
+        }
+
+        private void location_click(object sender, RoutedEventArgs e)
+        {
+            // Configure open file dialog box
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+            // Show open file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                // Open document
+                string filename = dlg.FileName;
+                fileLocation.Value = filename;
+                ((Button)sender).Content = filename;
+            }
         }
 
 

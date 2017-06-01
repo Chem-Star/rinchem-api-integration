@@ -12,92 +12,145 @@ namespace RinchemApiIntegrationConsole
     /// Bridgeing class between the UI and functional calls
     /// Everything aside from Credentials should intermediately run through here
     /// </summary>
-    class APImanager
+    public class APImanager
     {
-        private List<DataLoader> dataLoaders = new List<DataLoader>() { new OboRinchemExcelLoader(), new OboRinchemJsonLoader(),
-                                                                        new AsnRinchemExcelLoader(), new AsnRinchemJsonLoader() };
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// REGISTER ANY CUSTOM DATA LOADERS HERE
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private static List<DataLoader> AsnDataLoaders = new List<DataLoader>() { new AsnRinchemExcelLoader(), new AsnRinchemJsonLoader() };
+        private static List<DataLoader> OboDataLoaders = new List<DataLoader>() { new OboRinchemExcelLoader(), new OboRinchemJsonLoader() };
 
-        private Profiles profiles { get; set; }                     // Contains all prior saved Profiles
-        private Credentials credentials { get; set; }               // The login details used to connect to SalesForce
-        private SalesForceConnection sfConnection { get; set; }     // Manages the salesforce connection
-        private DataLoader dataLoader { get; set; }                 // Interface responsible for loading and converting data ***USER MUST IMPLEMENT THEIR OWN***
+        private DataLoader dataLoader { get; set; }                 // Interface responsible for loading and converting data
         private DataObject dataObject { get; set; }                 // Interface responsible for defining the model type
-        private String httpVerb { get; set; }                       // The verb we use during the API call
-        private String apiType { get; set; }                            // The api that we are interested in calling
 
+        private static Profiles profiles { get; set; }              // Contains all prior saved Profiles
+
+        private SalesForceConnection sfConnection { get; set; }     // Manages the salesforce connection
+        private Profile profile { get; set; }                       // The profile that we use to connect to salesforce
+        private String httpVerb { get; set; }                       // The verb we use during the API call
+        private String apiType { get; set; }                        // The api that we are interested in calling
+
+        private Boolean areCredentialsVerified = false;
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Constructor -- needs ui so that it can update the logbox
         public APImanager()
         {
             profiles = new Profiles();
+            dataLoader = AsnDataLoaders[0];
+            httpVerb = "POST";
+            apiType = "ASN";
         }
 
-        // Array of all potential data loaders
-        public List<DataLoader> getDataLoaders()
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // DATA LOADERS
+        public List<DataLoader> getAllDataLoaders()
         {
+            List<DataLoader> dataLoaders = new List<DataLoader>();
+            dataLoaders.AddRange(AsnDataLoaders);
+            dataLoaders.AddRange(OboDataLoaders);
             return dataLoaders;
         }
-        // Returns the DataLoader object
-        public DataLoader getDataLoader()
+        public List<DataLoader> getApiDataLoaders()
+        {
+            switch (apiType)
+            {
+                case "ASN":
+                    return AsnDataLoaders;
+                case "OBO":
+                    return OboDataLoaders;
+                default:
+                    Console.WriteLine("Couldn't find the specified API");
+                    return null;
+            }
+        }
+        public DataLoader getCurrentDataLoader()
         {
             return dataLoader;
         }
-        // Get the specified data loader
-        public void setDataLoader(String typeName)
+        public void setCurrentDataLoader(String typeName)
         {
-            dataLoader = dataLoaders.Find(x => x.GetUniqueName() == typeName);
+            dataLoader = getAllDataLoaders().Find(x => x.GetUniqueName() == typeName);
             if (dataLoader == null) ConsoleLogger.log("Couldn't find the specified DataLoader" + typeName);
         }
 
-        // Sets new credentials for the salesforce login
-        public void setCredentials(Credentials credentials)
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // CREDENTIALS
+        public void setAreCredentialsVerified(Boolean val)
         {
-            this.credentials = credentials;
+            areCredentialsVerified = val;
         }
-        // Saves a new profile
+        public Boolean getAreCredentialsVerified()
+        {
+            return areCredentialsVerified;
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // PROFILES
+        //Edit or Save
         public void saveProfile(Profile profile)
         {
             profiles.saveProfile(profile);
         }
-        // Deletes a profile
         public void deleteProfile(String profilename)
         {
             profiles.deleteProfile(profilename);
         }
-        // Returns the currently loaded profiles
+
+        //Get
         public List<Profile> getProfiles()
         {
             return profiles.PROFILES;
         }
-        // Sets the path to the profiles.json file
-        public void setProfilesPath(String filepath)
+        
+        public Profile getProfileById(String uid)
         {
-            profiles.setProfilesPath(filepath);
+            return profiles.findProfile1(uid);
         }
-        // Sets the path to the profiles.json file
-        public String getProfilesPath()
+        public Profile getProfileByName(String name)
         {
-            return profiles.getProfilesPath();
+            return profiles.findProfileByName(name);
         }
-        // Returns the profile with the give uid
-        public Profile getProfile(String uid)
+        public Profile getCurrentProfile()
         {
-            return profiles.findProfile(uid);
+            return profile;
         }
-        // Sets the httpVerb that is used during the api call
+
+        //Set
+        public void setCurrentProfile(String profileName)
+        {
+            profile = getProfileByName(profileName);
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // API Setup Specific
         public void setVerb(String verb)
         {
             httpVerb = verb;
         }
-        // Sets the api type that is used during the api call
-        public void setApi(String api)
+        public void setApiType(String api)
         {
             apiType = api;
         }
 
-        // Trys to login to salesforce with the currently loaded credentials
-        public async Task<Boolean> testCredentials()
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// FUNCTIONAL METHODS
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
+        // Try to login to salesforce with the specified credentials
+        public async Task<Boolean> testCredentials(String password)
         {
-            if (credentials == null) return false;
+            Credentials credentials = new Credentials(
+                                    profile.SecurityToken,
+                                    profile.ConsumerKey,
+                                    profile.ConsumerSecret,
+                                    profile.Username,
+                                    password,
+                                    profile.IsSandboxUser);
+
+            if (sfConnection != null && sfConnection.isConnectedWithCredentials(credentials)) return true;
+            
             sfConnection = new SalesForceConnection(credentials);
             bool success = await sfConnection.tryToConnect();
             if (success)
@@ -110,7 +163,7 @@ namespace RinchemApiIntegrationConsole
             return success;
         }
 
-        // Trys to load the raw object data
+        // Try to load the raw object data with the current data loader
         public async Task<Boolean> testLoadData()
         {
             bool success = await dataLoader.LoadData();
@@ -126,7 +179,7 @@ namespace RinchemApiIntegrationConsole
             return success;
         }
 
-        // Trys to convert the raw object data to an DataObject
+        // Try to convert the raw object data to a DataObject
         public Boolean testConvertData()
         {
             dataObject = dataLoader.ConvertDataToObject();
@@ -144,11 +197,11 @@ namespace RinchemApiIntegrationConsole
             return success;
         }
 
-        // Trys to serializes the DataObject and open the HTTP connection
+        // Try to serialize the DataObject and open the HTTP connection
         public Boolean testApiSetup()
         {
-            if (sfConnection == null || dataObject == null) return false;
-            bool success = sfConnection.tryApiSetup(dataObject, httpVerb, apiType);
+            bool success = (sfConnection == null || dataObject == null) ? false : true;
+            if(success) sfConnection.tryApiSetup(dataObject, httpVerb, apiType);
 
             if (success)
             {
@@ -162,7 +215,7 @@ namespace RinchemApiIntegrationConsole
             return success;
         }
 
-        // Trys to send the actual API call to Salesforce
+        // Try to send the actual API call to Salesforce
         public async Task<Boolean> testApiCall()
         {
             bool success = await sfConnection.tryApiCall();
@@ -175,21 +228,6 @@ namespace RinchemApiIntegrationConsole
             {
                 ConsoleLogger.log("Failed API call");
             }
-
-            return success;
-        }
-
-        // Trys to run the full program
-        public async Task<bool> testAll()
-        {
-            ConsoleLogger.log("Running All");
-
-            bool success;
-            success = await testCredentials();
-            if (success) success = await testLoadData();
-            if (success) success = testConvertData();
-            if (success) success = testApiSetup();
-            if (success) success = await testApiCall();
 
             return success;
         }
