@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Net;
-//requires DeveloperForce.Force and DeveloperForce.Chatter nuget package
-using Salesforce.Common;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
@@ -9,6 +7,7 @@ using System.Text;
 using RinchemApiIntegrationConsole.UiSpecific;
 using System.Configuration;
 using System.Collections.Generic;
+using RinchemApiIntegrator.ApiSpecific;
 
 namespace RinchemApiIntegrationConsole
 {
