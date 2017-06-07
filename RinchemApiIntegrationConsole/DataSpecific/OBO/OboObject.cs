@@ -9,7 +9,7 @@ namespace RinchemApiIntegrationConsole.OBO
 {
     class OboObject : DataObject
     {
-        public Request rqst;
+        public Request rqst = new Request();
 
         public Boolean validate()
         {
@@ -32,11 +32,20 @@ namespace RinchemApiIntegrationConsole.OBO
 
             return validated;
         }
+
+        public void setObjectName(String name)
+        {
+            rqst.obo.Name = name;
+        }
+        public void setAction(String action)
+        {
+            rqst.obo.Action__c = action;
+        }
     }
-    
+
     class Request
     {
-        public OBO obo;
+        public OBO obo = new OBO();
         public List<LineItems> lineItems;
     }
 

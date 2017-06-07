@@ -152,16 +152,22 @@ namespace RinchemApiIntegrationConsole
                     if (resultObject.asn_order_num != null)
                     {
                         ConsoleLogger.log("|| ASN Order Num: " + resultObject.asn_order_num);
-                        ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.asn));
+                        //ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.asn));
                     }
                     if (resultObject.obo_order_num != null)
                     {
                         ConsoleLogger.log("|| OBO Order Num: " + resultObject.obo_order_num);
-                        ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.obo));
+                        //ConsoleLogger.log(JsonConvert.SerializeObject(resultObject.obo));
                     }
-                    resultObject.lineItems.ForEach(x => ConsoleLogger.log(JsonConvert.SerializeObject(x)));
-                    if (resultObject.status == "Error") return false;
-                    else return true;
+                    //resultObject.lineItems.ForEach(x => ConsoleLogger.log(JsonConvert.SerializeObject(x)));
+                    if (resultObject.status == "Error")
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
                 catch
                 {

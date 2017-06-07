@@ -45,8 +45,17 @@ namespace RinchemApiIntegrationConsole.ASN
 
             return validated;
         }
+
+        public void setObjectName(String name)
+        {
+            rqst.asn.Name = name;
+        }
+        public void setAction(String action)
+        {
+            rqst.asn.Action__c = action;
+        }
     }
-    
+
     class Request
     {
         public ASN asn;

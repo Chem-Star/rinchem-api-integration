@@ -241,7 +241,7 @@ namespace RinchemApiIntegrationConsole
         private void handle_api_action_changed(object sender, RoutedEventArgs e)
         {
             RadioButton apiAction = sender as RadioButton;
-            apiManager.setVerb((String)apiAction.Tag);
+            apiManager.setApiVerb((String)apiAction.Tag);
         }
 
 

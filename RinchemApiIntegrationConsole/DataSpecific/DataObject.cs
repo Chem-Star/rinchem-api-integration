@@ -9,5 +9,7 @@ namespace RinchemApiIntegrationConsole
     public interface DataObject
     {
         Boolean validate();
+        void setObjectName(String name);
+        void setAction(String action);
     }
 }

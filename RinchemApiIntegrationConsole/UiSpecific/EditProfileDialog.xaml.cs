@@ -61,6 +61,8 @@ namespace asnIntegratorConsole.UiSpecific
             TextBox ProfileName = this.FindName("ProfileName") as TextBox;
             Profile profile = apiManager.getProfileByName(ProfileName.Text);
             apiManager.deleteProfile(profile._id);
+
+            this.DialogResult = true;
         }
 
         private void handle_save_profile_click(object sender, RoutedEventArgs e)
@@ -82,6 +84,8 @@ namespace asnIntegratorConsole.UiSpecific
                                     SecurityToken.Text,
                                     IsSandbox.IsChecked ?? true);
             apiManager.saveProfile(profile);
+
+            this.DialogResult = true;
         }
     }
 }

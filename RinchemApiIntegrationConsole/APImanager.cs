@@ -27,8 +27,10 @@ namespace RinchemApiIntegrationConsole
 
         private SalesForceConnection sfConnection { get; set; }     // Manages the salesforce connection
         private Profile profile { get; set; }                       // The profile that we use to connect to salesforce
-        private String httpVerb { get; set; }                       // The verb we use during the API call
+        private String apiVerb { get; set; }                       // The verb we use during the API call
         private String apiType { get; set; }                        // The api that we are interested in calling
+        private String apiAction { get; set; }                      // The action that we would like the API to perform
+        private String objectName { get; set; }                     // The name of the DataObject that we would like the API to handle
 
         private Boolean areCredentialsVerified = false;
 
@@ -38,8 +40,10 @@ namespace RinchemApiIntegrationConsole
         {
             profiles = new Profiles();
             dataLoader = AsnDataLoaders[0];
-            httpVerb = "POST";
+            apiVerb = "POST";
             apiType = "ASN";
+            apiAction = "NEW";
+            objectName = "";
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,20 +128,45 @@ namespace RinchemApiIntegrationConsole
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // API Setup Specific
-        public void setVerb(String verb)
+        public void setApiVerb(String verb)
         {
-            httpVerb = verb;
+            apiVerb = verb;
         }
         public void setApiType(String api)
         {
             apiType = api;
+        }
+        public void setApiAction(String action)
+        {
+            apiAction = action;
+        }
+        public void setObjectName(String name)
+        {
+            objectName = name;
+        }
+
+        public String getCurrentApiType()
+        {
+            return apiType;
+        }
+        public String getCurrentApiVerb()
+        {
+            return apiVerb;
+        }
+        public String getCurrentApiAction()
+        {
+            return apiAction;
+        }
+        public String getCurrentObjectName()
+        {
+            return objectName;
         }
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// FUNCTIONAL METHODS
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         // Try to login to salesforce with the specified credentials
         public async Task<Boolean> testCredentials(String password)
         {
