@@ -229,8 +229,28 @@ namespace RinchemApiIntegrationConsole
         // Try to serialize the DataObject and open the HTTP connection
         public Boolean testApiSetup()
         {
-            bool success = (sfConnection == null || dataObject == null) ? false : true;
-            if(success) sfConnection.tryApiSetup(dataObject, httpVerb, apiType);
+            bool success = (sfConnection == null) ? false : true;
+
+            if(dataObject == null)
+            {
+                switch (getCurrentApiType())
+                {
+                    case "ASN":
+                        dataObject = new AsnObject();
+                        break;
+                    case "OBO":
+                        dataObject = new OboObject();
+                        break;
+                    default:
+                        Console.WriteLine("The specified api type wasn't found");
+                        break;
+                }
+            }
+
+            dataObject.setAction(apiAction);
+            dataObject.setObjectName( (apiAction != "NEW") ? objectName : "");
+
+            if(success) sfConnection.tryApiSetup(dataObject, apiVerb, apiType);
 
             if (success)
             {
