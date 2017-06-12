@@ -4,7 +4,7 @@
   <img src="http://www.rinchem.com/images/logo.gif" alt="Slate: API Documentation Generator" width="226">
 </p>
 
-<h1 align="center">Rinchem Easy Link API Integration </h1>
+<h1 align="center">Rinchem Easy-Link API Integration </h1>
 
 
 
