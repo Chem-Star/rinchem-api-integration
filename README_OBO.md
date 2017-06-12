@@ -8,13 +8,13 @@
 
 ## Motivation
 
-The Outbound Order, OBO, provides details related to orders being shipped from Rinchem either to a facility or to another Rinchem warehouse. By integrating with the API, this information becomes more consistent, more secure, and more easily accessible where and when you need it.
+The Outbound Order, **OBO**, provides details related to orders being shipped from Rinchem either to a facility or to another Rinchem warehouse. By integrating with the API, this information becomes more consistent, more secure, and more easily accessible where and when you need it.
 
 ## Calling The OBO API
-If you have not done so already, please review the documentation in the main README.md as that walks you through the process to get the necessary **instance_url** and **authentication_token**, as well as how to format the call once you have the correct body payload. 
+If you have not done so already, please review the documentation in the main **README.md** as that walks you through the process to get the necessary **instance_url** and **authentication_token**, as well as how to format the call once you have the correct body payload. 
 
 #### OBO Suffix:
-Append this to your Salesforce **instance_url**.
+Append the following suffix to your Salesforce **instance_url**.
 ```
 /services/apexrest/v1/OBO__c
 ```
@@ -28,9 +28,9 @@ Append this to your Salesforce **instance_url**.
 
 
 ### Body Payload: 
-For a new OBO request the API expects a body payload with the json format displayed below. The demonstrated payload shows all fields that the API can handle, though some of these are not necessary. Please see the following sections for minimum permissible payloads for each VERB type.
+For a new OBO request the API expects a body payload with the JSON format displayed below. The demonstrated payload shows all fields that the API can handle, though some of these are not required. Please see the following sections for minimum permissible payloads for each VERB type.
 
-In order to make the payloads more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
+In order to make the payloads more accessible, a C# object representation has been created which mimics this format. By building up the C# representation, the JSON body can then be created with a simple serialize call with a JSON library such as 'Newtonsoft.JSON'.
 
 ```
 {
@@ -79,7 +79,7 @@ In order to make the payloads more accessible, a C# object representation has be
 }
 ```
 #### Required Fields - POST:
-POST requests will not be accepted into the WMS if any of these fields have improper values. The **Accepted Values** section below outlines permissible values for some of the more specialized fields such as unit of measure and hold codes.
+POST requests will not be accepted into the WMS if any of these fields have improper values. The **Accepted Values** section below outlines permissible values for some of the more specialized fields such as *Units of Measure* and *Hold Codes*.
 ```
 {
 	"rqst": {
@@ -107,7 +107,7 @@ POST requests will not be accepted into the WMS if any of these fields have impr
 }
 ```
 #### Required Fields - PATCH
-In order to use the PATCH verb, the payload should provide the unique order id (returned after a successful POST call) in the 'Name' field, and the desired action in the 'Action__c' field. Any other fields that are provided will be updated with their new values.
+In order to use the PATCH verb, the payload must provide the unique order id (returned after a successful POST call) in the *'Name'* field, and the desired action in the *'Action__c'* field. Any other fields that are provided will be updated with their new values.
 ```
 {
 	"rqst": {
@@ -140,7 +140,7 @@ For a full list of Warehouse IDs please see the attached excel sheet **AcceptedV
 </Table>
 
 ### Accepted Hold Codes
-Also available in the AcceptedValues excel sheet, under the *Hold_Code* tab.
+Hold Codes are also available in the AcceptedValues excel sheet, under the *Hold_Code* tab.
 <Table>
 <tr><th>Hold Code</th><th>Description</th><th>Affect Damaged</th></tr>
 <tr> <td>DMG</td>  <td>DAMAGED                              </td> <td>Yes</td> </tr>
@@ -156,7 +156,7 @@ Also available in the AcceptedValues excel sheet, under the *Hold_Code* tab.
 </Table>
 
 ### Accepted Units of Measure
-Also available in the AcceptedValues excel sheet, under the *Unit_Of_Measure* tab.
+Units of Measure are also available in the AcceptedValues excel sheet, under the *Unit_Of_Measure* tab.
 <Table>
 <tr>
 <td>TOTE</td>
