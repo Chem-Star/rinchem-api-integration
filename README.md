@@ -139,7 +139,7 @@ This includes the status, a message, the content that has been entered into Sale
 ## Pre-built Console Installation
 Rinchem has built a small console to aid in your integration pursuit; it can be used as-is to test your credentials in a remote call, as well as  to send test API Calls. If desired, using C#, this can be built upon to function as a full integration solution. If this is your intent, please see the README in the nested **RinchemApiIntegrationConsole** folder.
 
-<img src="https://cloud.githubusercontent.com/assets/25616817/26076136/f38b2b0a-3974-11e7-9102-b213d3e2f156.PNG" alt="">
+<img src="https://user-images.githubusercontent.com/25616817/27057184-453bcc10-4f88-11e7-9381-15b94dd17da4.png" alt="">
 
 If you are just getting started and simply want to download the pre-built console, you may do so by downloading the RinchemAsnIntegrator.zip file (click on the file, then on the subsequent page there is a button to 'Download'). Once downloaded:
 1. Extract the zip file to your desired location. 
