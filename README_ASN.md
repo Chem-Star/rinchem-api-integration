@@ -8,14 +8,13 @@
 
 ## Motivation
 
-The Advance Shipping Notice, ASN, provides order and shipment information in one electronic transaction sent from the shipper to the receiver. While the ASN is similar to a Bill of Lading (BOL) and even carries much of the same information, it has a different function. The BOL is meant to accompany a shipment along its path. An ASN is intended to provide information in advance of the shipment arriving at its destination.
-The value of the ASN comes from receiving it prior to the actual shipment. Rinchem provides a standardized data integration method to ensure easy, efficient, and accurate data exchange. 
+The Advance Shipping Notice, **ASN**, provides inbound order and shipment information in one electronic transaction sent from the shipper to Rinchem. An ASN is intended to provide information in advance of the shipment arriving at its destination. The value of the ASN comes from receiving it prior to the actual shipment. Rinchem provides a standardized data integration method to ensure easy, efficient, and accurate data exchange. 
 
 ## Calling The ASN API
-If you have not done so already, please review the documentation in the main README.md as that walks you through the process to get the necessary **instance_url** and **authentication_token**, as well as how to format the call once you have the correct body payload. 
+If you have not done so already, please review the documentation in the main **README.md** as that walks you through the process to get the necessary **instance_url** and **authentication_token**, as well as how to format the call once you have the correct body payload. 
 
 #### ASN Suffix:
-Append this to your Salesforce **instance_url**.
+Append the following suffix to your Salesforce **instance_url**.
 ```
 /services/apexrest/v1/ASN__c
 ```
@@ -29,9 +28,9 @@ Append this to your Salesforce **instance_url**.
 
 
 ### Body Payload: 
-For a new ASN request the API expects a body payload with the json format displayed below. The demonstrated payload shows all fields that the API can handle, though some of these are not necessary. Please see the following sections for minimum permissible payloads for each VERB type.
+For a new ASN request the API expects a body payload with the JSON format displayed below. The demonstrated payload shows all fields that the API can handle, though some of these are not required. Please see the following sections for minimum permissible payloads for each VERB type.
 
-In order to make the payloads more accessible, a C# object representation has been created that mimicks this format. By building up the C# representation, the json body can then be created with a simple serialize call with a json library such as 'Newtonsoft.JSON'.
+In order to make the payloads more accessible, a C# object representation has been created which mimics this format. By building up the C# representation, the JSON body can then be created with a simple serialize call with a JSON library such as 'Newtonsoft.JSON'.
 
 ```
 {
@@ -97,43 +96,39 @@ In order to make the payloads more accessible, a C# object representation has be
 }
 ```
 #### Required Fields - POST:
-POST requests will not be accepted into the WMS if any of these fields have improper values. The **Accepted Values** section below outlines permissible values for some of the more specialized fields such as unit of measure and hold codes.
+POST requests will not be accepted into the WMS if any of these fields have improper values. The **Accepted Values** section below outlines permissible values for some of the more specialized fields such as *Units of Measure* and *Hold Codes*.
 
 ```
 {
 	"rqst": {
 		"asn": {
-			"Message_Id__c": "xxx",
-			"Date_ASN_Sent__c": "xxxx-xx-xx",
-			"Supplier_Name__c": "xxx",
-			"Rinchem_Supplier_Id__c": "xxx",
-			"ASN_Recipient_Name__c": "xxxx",
-			"ASN_Recipient_Id__c": "xxxxx",
-			"Template_Version__c": "xx.xx",
-			"Estimated_Ship_Date__c": "xxxx-xx-xx",
-			"Estimated_Arrival_Date__c": "xxxx-xx-xx",
-			"Shipment_Id__c": "xxx xxxxxx",
-			"Order_Type__c": "xx",
-			"Origin_Id__c": "xxx",
-			"Destination_Warehouse_Code__c": "xx",
-			"Carrier_Id__c": "ddd",
-			"Carrier_Name__c": "xxx",
-			"Purchase_Order_Number__c": "xxx",
-			"Product_Owner_Id__c": "xxx"
+			"Date_ASN_Sent__c": "2017-04-20",
+			"Supplier_Name__c": "Example Supplier, INC",
+			"Rinchem_Supplier_Id__c": "EXA",
+			"ASN_Recipient_Name__c": "Rinchem",
+			"ASN_Recipient_Id__c": "16",
+			"Template_Version__c": "1.0",
+			"Estimated_Ship_Date__c": "2017-03-24",
+			"Estimated_Arrival_Date__c": "2017-03-24",
+			"Order_Type__c": "PO",
+			"Destination_Warehouse_Code__c": "11",
+			"Carrier_Id__c": "RINCHEM",
+			"Carrier_Name__c": "Rinchem",
+			"Purchase_Order_Number__c": "123456",
+			"Product_Owner_Id__c": "XXXXXX"
 		},
 		"lineItems": [{
-			"Name": "1",
-			"Vendor_Part_Number__c": "xxxxx_part",
-			"Product_Description__c": "This is an example line item",
-			"Quantity__c": "xx",
-			"Unit_of_Measure__c": "DRUM"
+			"Vendor_Part_Number__c": "1234-01",
+			"Product_Description__c": "EXAMPLE OXIDE, 65%",
+			"Quantity__c": "4",
+			"Unit_of_Measure__c": "BOTTLE",
 		}]
 	}
 }
 ```
 
 #### Required Fields - PATCH
-In order to use the PATCH verb, the payload should provide the unique order id (returned after a successful POST call) in the 'Name' field, and the desired action in the 'Action__c' field. Any other fields that are provided will be updated with their new values.
+In order to use the PATCH verb, the payload should provide the unique order id (returned after a successful POST call) in the *'Name'* field, and the desired action in the *'Action__c'* field. Any other fields that are provided will be updated with their new values.
 
 ```
 {
@@ -167,7 +162,7 @@ For a full list of Warehouse IDs please see the attached excel sheet **AcceptedV
 </Table>
 
 #### Accepted Hold Codes
-Also available in the AcceptedValues excel sheet, under the *Hold_Code* tab.
+Hold Codes are also available in the AcceptedValues excel sheet, under the *Hold_Code* tab.
 <Table>
 <tr><th>Hold Code</th><th>Description</th><th>Affect Damaged</th></tr>
 <tr> <td>DMG</td>  <td>DAMAGED                              </td> <td>Yes</td> </tr>
@@ -183,7 +178,7 @@ Also available in the AcceptedValues excel sheet, under the *Hold_Code* tab.
 </Table>
 
 #### Accepted Units of Measure
-Also available in the AcceptedValues excel sheet, under the *Unit_Of_Measure* tab.
+Units of Measure are also available in the AcceptedValues excel sheet, under the *Unit_Of_Measure* tab.
 <Table>
 <tr>
 <td>TOTE</td>
