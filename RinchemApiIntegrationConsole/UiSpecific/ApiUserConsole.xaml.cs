@@ -268,6 +268,11 @@ namespace asnIntegratorConsole.UiSpecific
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///    API BUTTON METHODS
+        private void handle_use_validation_click(object sender, RoutedEventArgs e)
+        {
+            apiManager.setUseValidation((sender as CheckBox).IsChecked ?? true);
+        }
+
         //Load Data
         private async void handle_load_data_debug(object sender, RoutedEventArgs e)
         {
@@ -374,9 +379,9 @@ namespace asnIntegratorConsole.UiSpecific
         {
             RadioButton apiType = sender as RadioButton;
             apiManager.setApiType((String) apiType.Tag);
-            handle_update_data_information_grid(null, null);
             updateDataLoaderSelectorData();
             DataLoaderSelector.SelectedIndex = 0;
+            handle_update_data_information_grid(null, null);
 
             resetDataDependent();
         }

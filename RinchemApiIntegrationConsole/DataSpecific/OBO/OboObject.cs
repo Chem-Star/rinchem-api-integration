@@ -11,6 +11,13 @@ namespace RinchemApiIntegrationConsole.OBO
     {
         public Request rqst = new Request();
 
+        public void initialize()
+        {
+            rqst = new Request();
+            rqst.obo = new OBO();
+            rqst.lineItems = new List<LineItems>();
+        }
+
         public Boolean validate()
         {
             bool validated = true;

@@ -1,9 +1,6 @@
 ﻿using RinchemApiIntegrationConsole.UiSpecific;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RinchemApiIntegrationConsole.ASN
 {
@@ -11,10 +8,16 @@ namespace RinchemApiIntegrationConsole.ASN
     {
         public Request rqst;
 
+        public void initialize()
+        {
+            rqst = new Request();
+            rqst.asn = new ASN();
+            rqst.lineItems = new List<LineItems>();
+        }
+
         public Boolean validate()
         {
             bool validated = true;
-            if (rqst.asn.Message_Id__c                  == null) { ConsoleLogger.log( "Missing required field \"Message_Id__c\"                  ");     validated = false; };
             if (rqst.asn.Date_ASN_Sent__c               == null) { ConsoleLogger.log( "Missing required field \"Date_ASN_Sent__c\"               ");     validated = false; };
             if (rqst.asn.Supplier_Name__c               == "") { ConsoleLogger.log( "Missing required field \"Supplier_Name__c\"               ");     validated = false; };
             if (rqst.asn.Rinchem_Supplier_Id__c         == "") { ConsoleLogger.log( "Missing required field \"Rinchem_Supplier_Id__c\"         ");     validated = false; };
@@ -23,19 +26,16 @@ namespace RinchemApiIntegrationConsole.ASN
             if (rqst.asn.Template_Version__c            == "") { ConsoleLogger.log( "Missing required field \"Template_Version__c\"            ");     validated = false; };
             if (rqst.asn.Estimated_Ship_Date__c         == "") { ConsoleLogger.log( "Missing required field \"Estimated_Ship_Date__c\"         ");     validated = false; };
             if (rqst.asn.Estimated_Arrival_Date__c      == "") { ConsoleLogger.log( "Missing required field \"Estimated_Arrival_Date__c\"      ");     validated = false; };
-            if (rqst.asn.Shipment_Id__c                 == "") { ConsoleLogger.log( "Missing required field \"Shipment_Id__c\"                 ");     validated = false; };
             if (rqst.asn.Order_Type__c                  == "") { ConsoleLogger.log( "Missing required field \"Order_Type__c\"                  ");     validated = false; };
-            if (rqst.asn.Origin_Id__c                   == "") { ConsoleLogger.log( "Missing required field \"Origin_Id__c\"                   ");     validated = false; };
             if (rqst.asn.Destination_Warehouse_Code__c  == "") { ConsoleLogger.log( "Missing required field \"Destination_Warehouse_Code__c\"  ");     validated = false; };
             if (rqst.asn.Carrier_Id__c                  == "") { ConsoleLogger.log( "Missing required field \"Carrier_Id__c\"                  ");     validated = false; };
             if (rqst.asn.Carrier_Name__c                == "") { ConsoleLogger.log( "Missing required field \"Carrier_Name__c\"                ");     validated = false; };
             if (rqst.asn.Purchase_Order_Number__c       == "") { ConsoleLogger.log( "Missing required field \"Purchase_Order_Number__c\"       ");     validated = false; };
             if (rqst.asn.Product_Owner_Id__c            == "") { ConsoleLogger.log( "Missing required field \"Product_Owner_Id__c\"            ");     validated = false; };
-
-
+            
+            
             rqst.lineItems.ForEach(item =>
                {
-                   if (item.Name                      == "") { ConsoleLogger.log("A line item is missing the required field \"Name\"                     ");     validated = false; };
                    if (item.Vendor_Part_Number__c     == "") { ConsoleLogger.log("A line item is missing the required field \"Vendor_Part_Number__c\"    ");     validated = false; };
                    if (item.Product_Description__c    == "") { ConsoleLogger.log("A line item is missing the required field \"Product_Description__c\"   ");     validated = false; };
                    if (item.Quantity__c               == "") { ConsoleLogger.log("A line item is missing the required field \"Quantity__c\"              ");     validated = false; };

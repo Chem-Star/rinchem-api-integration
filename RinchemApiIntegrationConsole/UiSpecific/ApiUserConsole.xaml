@@ -113,13 +113,12 @@
 
                 <ScrollViewer Name="LogScroller" 
                               Grid.Row="1"
-                            Padding="20, 0" Height="200">
+                              Padding="20, 0" Height="200">
                     <Border BorderBrush="DarkGray" BorderThickness="1" Background="White"  DockPanel.Dock="Top" Padding="0">
                         <TextBox Name="LogOutput" 
                                 IsReadOnly="True"
                                 Margin="0,0,0,0"
                                 TextWrapping="Wrap" 
-                                Text="TextBlock" 
                                 Padding="5"/>
                     </Border>
                 </ScrollViewer>
@@ -375,21 +374,28 @@
                 <Grid Name="DebugButtons"
                         Grid.Row="2" Margin="10">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0"
+                    <CheckBox Grid.Column="0"
+                        HorizontalAlignment="Right"
+                        Name="UseValidationCheckbox" Content="Use Validation"
+                        IsChecked="True"
+                        Width="100" Margin="0,0,10,0"
+                        Click="handle_use_validation_click" Height="20" VerticalAlignment="Top"/>
+                    <Button Grid.Column="1"
                         HorizontalAlignment="Right"
                         Name="LoadDataButton" Content="Load Data" Background="LightCyan"
                         Width="100" Margin="0,0,10,0"
                         Click="handle_load_data_debug" Height="20" VerticalAlignment="Top"/>
-                    <Button Grid.Column="1"
+                    <Button Grid.Column="2"
                         Name="ConvertDataButton" Content="Convert Data" Background="LightCyan"
                         Width="100" Margin="10,0"
                         Click="handle_convert_data_debug"/>
-                    <Button Grid.Column="2"
+                    <Button Grid.Column="3"
                         HorizontalAlignment="Left"
                         Name="CallApiButton" Content="Send Data" Background="LightCyan"
                         Width="100" Margin="10,0"

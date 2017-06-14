@@ -88,9 +88,6 @@
     <Compile Include="DataSpecific\OBO\OboObject.cs" />
     <Compile Include="DataSpecific\OBO\OboRinchemExcelLoader.cs" />
     <Compile Include="DataSpecific\OBO\OboRinchemJsonLoader.cs" />
-    <Compile Include="UiSpecific\ApiDebugConsole.xaml.cs">
-      <DependentUpon>ApiDebugConsole.xaml</DependentUpon>
-    </Compile>
     <Compile Include="APImanager.cs" />
     <Compile Include="DataSpecific\ASN\AsnObject.cs" />
     <Compile Include="DataSpecific\DataLoader.cs" />
@@ -107,10 +104,6 @@
     <Compile Include="UiSpecific\ApiUserConsole.xaml.cs">
       <DependentUpon>ApiUserConsole.xaml</DependentUpon>
     </Compile>
-    <Page Include="UiSpecific\ApiDebugConsole.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>

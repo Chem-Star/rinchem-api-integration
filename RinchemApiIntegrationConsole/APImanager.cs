@@ -33,6 +33,7 @@ namespace RinchemApiIntegrationConsole
         private String objectName { get; set; }                     // The name of the DataObject that we would like the API to handle
 
         private Boolean areCredentialsVerified = false;
+        private Boolean useValidation = true;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Constructor -- needs ui so that it can update the logbox
@@ -74,6 +75,11 @@ namespace RinchemApiIntegrationConsole
         }
         public void setCurrentDataLoader(String typeName)
         {
+            if (typeName == null || typeName == "")
+            {
+                return;
+            }
+
             dataLoader = getAllDataLoaders().Find(x => x.GetUniqueName() == typeName);
             if (dataLoader == null) ConsoleLogger.log("Couldn't find the specified DataLoader" + typeName);
         }
@@ -135,6 +141,20 @@ namespace RinchemApiIntegrationConsole
         public void setApiType(String api)
         {
             apiType = api;
+            switch (apiType)
+            {
+                case "ASN":
+                    dataObject = new AsnObject();
+                    ((AsnObject)dataObject).initialize();
+                    break;
+                case "OBO":
+                    dataObject = new OboObject();
+                    ((OboObject)dataObject).initialize();
+                    break;
+                default:
+                    ConsoleLogger.log("API Type Not Found");
+                    return;
+            }
         }
         public void setApiAction(String action)
         {
@@ -160,6 +180,11 @@ namespace RinchemApiIntegrationConsole
         public String getCurrentObjectName()
         {
             return objectName;
+        }
+
+        public void setUseValidation(bool value)
+        {
+            useValidation = value;
         }
 
 
@@ -212,7 +237,8 @@ namespace RinchemApiIntegrationConsole
         public Boolean testConvertData()
         {
             dataObject = dataLoader.ConvertDataToObject();
-            bool success = (dataObject != null) ? dataObject.validate() : false;
+            bool success = (dataObject != null);
+            if (success && useValidation) success = dataObject.validate();
 
             if (success)
             {

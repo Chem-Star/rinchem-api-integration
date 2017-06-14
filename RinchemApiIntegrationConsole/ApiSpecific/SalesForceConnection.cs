@@ -26,6 +26,8 @@ namespace RinchemApiIntegrationConsole
             this.credentials = credentials;
 
             // Sets the security protocol for all ServicePoint objects managed by the ServicePointManager
+            //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
+            //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
 
