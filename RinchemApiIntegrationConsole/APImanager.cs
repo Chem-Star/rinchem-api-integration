@@ -27,13 +27,17 @@ namespace RinchemApiIntegrationConsole
 
         private SalesForceConnection sfConnection { get; set; }     // Manages the salesforce connection
         private Profile profile { get; set; }                       // The profile that we use to connect to salesforce
-        private String apiVerb { get; set; }                       // The verb we use during the API call
+        private String apiVerb { get; set; }                        // The verb we use during the API call
         private String apiType { get; set; }                        // The api that we are interested in calling
         private String apiAction { get; set; }                      // The action that we would like the API to perform
         private String objectName { get; set; }                     // The name of the DataObject that we would like the API to handle
 
+        private String queryString { get; set; }                    // Used to get desired ASNs
+
         private Boolean areCredentialsVerified = false;
         private Boolean useValidation = true;
+
+        private SalesForceResponse response;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Constructor -- needs ui so that it can update the logbox
@@ -164,6 +168,14 @@ namespace RinchemApiIntegrationConsole
         {
             objectName = name;
         }
+        public void setQueryString(String query)
+        {
+            queryString = query;
+        }
+        public String getQueryString()
+        {
+            return queryString;
+        }
 
         public String getCurrentApiType()
         {
@@ -187,6 +199,15 @@ namespace RinchemApiIntegrationConsole
             useValidation = value;
         }
 
+        public void setResponse(SalesForceResponse response)
+        {
+            this.response = response;
+        }
+        public SalesForceResponse getResponse()
+        {
+            return this.response;
+        }
+
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// FUNCTIONAL METHODS
@@ -205,7 +226,7 @@ namespace RinchemApiIntegrationConsole
 
             if (sfConnection != null && sfConnection.isConnectedWithCredentials(credentials)) return true;
             
-            sfConnection = new SalesForceConnection(credentials);
+            sfConnection = new SalesForceConnection(this, credentials);
             bool success = await sfConnection.tryToConnect();
             if (success)
             {

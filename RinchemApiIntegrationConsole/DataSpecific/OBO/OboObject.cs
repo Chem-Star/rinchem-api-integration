@@ -40,6 +40,10 @@ namespace RinchemApiIntegrationConsole.OBO
             return validated;
         }
 
+        public String getObjectName()
+        {
+            return rqst.obo.Name;
+        }
         public void setObjectName(String name)
         {
             rqst.obo.Name = name;

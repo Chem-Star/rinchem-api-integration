@@ -1,5 +1,6 @@
 ﻿using RinchemApiIntegrationConsole;
 using RinchemApiIntegrationConsole.UiSpecific;
+using RinchemApiIntegrator.UiSpecific;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ namespace asnIntegratorConsole.UiSpecific
     {
         APImanager apiManager;
         LogOutputDialog logOutputDialog;
+        AsnResponseViewer asnResponseViewer;
         Boolean debug;
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,12 +151,24 @@ namespace asnIntegratorConsole.UiSpecific
                     ApiActionNew.Visibility = Visibility.Visible;
                     ApiActionUpdate.Visibility = Visibility.Collapsed;
                     ApiActionCancel.Visibility = Visibility.Collapsed;
+                    ApiActionGetByName.Visibility = Visibility.Collapsed;
+                    ApiActionGetByQuery.Visibility = Visibility.Collapsed;
                     break;
                 case "PATCH":
                     apiManager.setApiAction("UPDATE"); ApiActionUpdate.IsChecked = true;
                     ApiActionNew.Visibility = Visibility.Collapsed;
                     ApiActionUpdate.Visibility = Visibility.Visible;
                     ApiActionCancel.Visibility = Visibility.Visible;
+                    ApiActionGetByName.Visibility = Visibility.Collapsed;
+                    ApiActionGetByQuery.Visibility = Visibility.Collapsed;
+                    break;
+                case "GET":
+                    apiManager.setApiAction("GETBYNAME"); ApiActionGetByName.IsChecked = true;
+                    ApiActionNew.Visibility = Visibility.Collapsed;
+                    ApiActionUpdate.Visibility = Visibility.Collapsed;
+                    ApiActionCancel.Visibility = Visibility.Collapsed;
+                    ApiActionGetByName.Visibility = Visibility.Visible;
+                    ApiActionGetByQuery.Visibility = Visibility.Visible;
                     break;
             }
             handle_update_data_information_grid(null, null);
@@ -171,23 +185,33 @@ namespace asnIntegratorConsole.UiSpecific
 
             switch (apiManager.getCurrentApiAction())
             {
+                case "GETBYNAME":
                 case "CANCEL":
                     DataInformationGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
                     DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
                     DataInformationGrid.RowDefinitions[3].Height = new GridLength(0);
+                    DataInformationGrid.RowDefinitions[4].Height = new GridLength(0);
+                    break;
+                case "GETBYQUERY":
+                    DataInformationGrid.RowDefinitions[1].Height = new GridLength(0);
+                    DataInformationGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+                    DataInformationGrid.RowDefinitions[3].Height = new GridLength(0);
+                    DataInformationGrid.RowDefinitions[4].Height = new GridLength(0);
                     break;
                 case "UPDATE":
                     DataInformationGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
-                    DataInformationGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+                    DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
                     DataInformationGrid.RowDefinitions[3].Height = new GridLength(1, GridUnitType.Star);
+                    DataInformationGrid.RowDefinitions[4].Height = new GridLength(1, GridUnitType.Star);
                     break;
                 case "NEW":
                     DataInformationGrid.RowDefinitions[1].Height = new GridLength(0);
-                    DataInformationGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+                    DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
                     DataInformationGrid.RowDefinitions[3].Height = new GridLength(1, GridUnitType.Star);
+                    DataInformationGrid.RowDefinitions[4].Height = new GridLength(1, GridUnitType.Star);
                     break;
             }
-            
+
         }
 
 
@@ -305,8 +329,9 @@ namespace asnIntegratorConsole.UiSpecific
             Boolean success = await apiManager.testCredentials(getPassword());
             setCredentialsStatus(success ? STATUS.SUCCESS : STATUS.FAILURE);
 
-            //Cancel doesn't load any data
-            if (apiManager.getCurrentApiAction() != "CANCEL")
+            //Cancel and Get don't load any data
+            if (apiManager.getCurrentApiAction() != "CANCEL" &&
+                apiManager.getCurrentApiVerb() != "GET")
             {
                 if (success)
                 {
@@ -335,10 +360,18 @@ namespace asnIntegratorConsole.UiSpecific
             setSendDataStatus(success ? STATUS.SUCCESS : STATUS.FAILURE);
         }
 
+        //Send Data
+        private void handle_view_response(object sender, RoutedEventArgs e)
+        {
+            asnResponseViewer = new AsnResponseViewer(apiManager.getResponse());
+            asnResponseViewer.Owner = this;
+            asnResponseViewer.Show();
+        }
+
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///     Drop Downs
-        
+
         //Profile Selector
         private void handle_profile_selector_loaded(object sender, RoutedEventArgs e)
         {
@@ -404,6 +437,11 @@ namespace asnIntegratorConsole.UiSpecific
         private void handle_object_name_changed(object sender, RoutedEventArgs e)
         {
             apiManager.setObjectName((sender as TextBox).Text);
+            resetDataDependent();
+        }
+        private void handle_query_string_changed(object sender, RoutedEventArgs e)
+        {
+            apiManager.setQueryString((sender as TextBox).Text);
             resetDataDependent();
         }
 
@@ -540,6 +578,17 @@ namespace asnIntegratorConsole.UiSpecific
         public void setSendDataStatus(STATUS status)
         {
             setButtonStatus(SendData, status);
+            if (status == STATUS.SUCCESS)
+            {
+                ViewResponseDebug.Visibility = Visibility.Visible;
+                ViewResponse.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ViewResponseDebug.Visibility = Visibility.Collapsed;
+                ViewResponse.Visibility = Visibility.Collapsed;
+            }
+
         }
         public void setAllStatuses(STATUS status)
         {

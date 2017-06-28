@@ -11,5 +11,6 @@ namespace RinchemApiIntegrationConsole
         Boolean validate();
         void setObjectName(String name);
         void setAction(String action);
+        String getObjectName();
     }
 }

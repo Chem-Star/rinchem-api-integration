@@ -13,6 +13,7 @@ namespace RinchemApiIntegrationConsole
 {
     internal class SalesForceConnection
     {
+        private APImanager apiManager;
         private Credentials credentials;
         private string CustomAPI    = ConfigurationManager.AppSettings["CustomAPI"];
 
@@ -21,8 +22,9 @@ namespace RinchemApiIntegrationConsole
 
         private Boolean isConnected = false;
 
-        public SalesForceConnection(Credentials credentials)
+        public SalesForceConnection(APImanager apiManager, Credentials credentials)
         {
+            this.apiManager = apiManager;
             this.credentials = credentials;
 
             // Sets the security protocol for all ServicePoint objects managed by the ServicePointManager
@@ -48,6 +50,7 @@ namespace RinchemApiIntegrationConsole
         public async Task<Boolean> tryToConnect()
         {
             // Uses DeveloperForce.Force nuget package -- a force.com toolkit for .net 
+            // UPDATE: Migrated required functions to local AuthenticationClient.cs
             // Used to login to SalesForce
             auth = new AuthenticationClient();
 
@@ -62,7 +65,6 @@ namespace RinchemApiIntegrationConsole
                 : "https://login.salesforce.com/services/oauth2/token";
 
             //  Try to connect to the salesforce service. If there is an error, it will be caught in 
-            //  the try/catch block in Main()
             try
             {
                 await auth.UsernamePasswordAsync(credentials.ConsumerKey,
@@ -104,27 +106,34 @@ namespace RinchemApiIntegrationConsole
             string oauthToken = auth.AccessToken;
             string serviceUrl = auth.InstanceUrl;
 
-            //  Convert our asnObject into a json object string
-            string requestMessage = JsonConvert.SerializeObject(obj);
+            HttpContent content = null;
+            if (httpVerb != "GET") 
+            {
+                //  Convert our asnObject into a json object string
+                string requestMessage = JsonConvert.SerializeObject(obj);
+                //  Convert our new JSON String into an HttpContent format that can actually be transmitted
+                //  Third parameter is stored as a 'MediaType'
+                content = new StringContent(requestMessage, Encoding.UTF8, "application/json");
+            } else
+            {  //GET requests append to the url and leave an empty body
+                String action = apiManager.getCurrentApiAction();
+                if (action == "GETBYNAME") CustomAPI += "?name=" + obj.getObjectName();
+                else if (action == "GETBYQUERY") CustomAPI += "?query=" + apiManager.getQueryString();
+            }
 
-            //  Convert our new JSON String into an HttpContent format that can actually be transmitted
-            //  Third parameter is stored as a 'MediaType'
-            HttpContent content = new StringContent(requestMessage, Encoding.UTF8, "application/json");
             //  Create a new identifier based on our API path and our SalesForce instance URL
             string uri = serviceUrl + CustomAPI;
-
-
-            //  Create request message associated with POST verb
+            //  Create request message associated with the desired verb
             HttpMethod httpMethod = new HttpMethod(httpVerb);
             request = new HttpRequestMessage(httpMethod, uri);
 
             //  Add token to header
             request.Headers.Add("Authorization", "Bearer " + oauthToken);
-
             //  Allow xml to be returned to the caller with the same 'MediaType' that was specified in our HttpContent
             request.Headers.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             //  Set the requests content that we will send
             request.Content = content;
+
 
             return true;
         }
@@ -140,14 +149,17 @@ namespace RinchemApiIntegrationConsole
             {
                 //  Try the API call, and hopefully receive a response
                 HttpResponseMessage response = await createClient.SendAsync(request);
-
+                
                 //  Convert the Content of the response to a String
                 string result = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(result);
+                //Console.WriteLine(result);
+                //ConsoleLogger.log(result);
 
                 try
                 {
                     SalesForceResponse resultObject = JsonConvert.DeserializeObject<SalesForceResponse>(result);
+                    apiManager.setResponse(resultObject);
+
                     ConsoleLogger.log("|| Status: "+resultObject.status);
                     ConsoleLogger.log("|| Message: "+resultObject.message);
                     if (resultObject.asn_order_num != null)
@@ -199,13 +211,16 @@ namespace RinchemApiIntegrationConsole
 
     public class SalesForceResponse
     {
-        public String status;
-        public String message;
-        public String asn_order_num;
-        public String obo_order_num;
-        public List<Object> lineItems;
-        public Object asn;
-        public Object obo;
+        public String status;               //Returned by any API call
+        public String message;              //Returned by any API call
+        public String asn_order_num;        //Returned by a successful ASN, POST or PATCH call
+        public String obo_order_num;        //Returned by a successful OBO, POST or PATCH call
+        public List<Object> lineItems;      //Returned by a successful ASN or OBO, POST or PATCH call
+        public Object asn;                  //Returned by a successful ASN, POST or PATCH call
+        public Object obo;                  //Returned by a successful ASN, POST or PATCH call
+
+        public List<ASN.Request> asns;      //Returned by a successful ASN, GET call
+
     }
 
 }

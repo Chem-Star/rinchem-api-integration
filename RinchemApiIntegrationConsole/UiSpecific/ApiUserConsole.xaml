@@ -281,6 +281,8 @@
                                                 GroupName="Verb" Padding="10,2" Content="POST" IsChecked="True"/>
                                 <RadioButton Click="handle_api_verb_changed" Tag="PATCH"
                                                 GroupName="Verb" Padding="10,2" Content="PATCH" />
+                                <RadioButton Click="handle_api_verb_changed" Tag="GET"
+                                                GroupName="Verb" Padding="10,2" Content="GET" />
                             </StackPanel>
                             <TextBlock Grid.Row="1" Grid.Column="5" HorizontalAlignment="Left"
                                 FontWeight="Bold">
@@ -298,6 +300,12 @@
                                 <RadioButton Name="ApiActionCancel"
                                                 Click="handle_api_action_changed" Tag="CANCEL"
                                                 GroupName="ActionPatch" Padding="10,2" Content="CANCEL" />
+                                <RadioButton Name="ApiActionGetByName"
+                                                Click="handle_api_action_changed" Tag="GETBYNAME"
+                                                GroupName="ActionGet" Padding="10,2" Content="by NAME" IsChecked="True"/>
+                                <RadioButton Name="ApiActionGetByQuery"
+                                                Click="handle_api_action_changed" Tag="GETBYQUERY"
+                                                GroupName="ActionGet" Padding="10,2" Content="by Query" />
                             </StackPanel>
 
                             <Separator Grid.Row="3" Grid.ColumnSpan="7" Margin="10,0"/>
@@ -315,6 +323,7 @@
                                 <RowDefinition Height="auto"  />
                                 <RowDefinition Height="auto"  />
                                 <RowDefinition Height="auto"  />
+                                <RowDefinition Height="auto"  />
                                 <RowDefinition Height="15"  />
                             </Grid.RowDefinitions>
 
@@ -324,30 +333,37 @@
                             Data Information
                             </TextBlock>
 
-
+                            <!-- Object Name Box -->
                             <TextBlock Name="ObjectNameLabel" Grid.Row="1" 
                                        HorizontalAlignment="Right" Padding="5"
                                        Text="Object Name"/>
-
-                            <!-- Data Loader Selector -->
                             <TextBox Name="ObjectNameBox"
                                     Grid.Row="1" Grid.Column="1"
                                     HorizontalAlignment="Stretch" Margin="5"
                                     Loaded="handle_object_name_changed"
                                     TextChanged="handle_object_name_changed" />
+                            <!-- Data Loader Selector -->
+                            <TextBlock Name="QueryLabel" Grid.Row="2" 
+                                       HorizontalAlignment="Right" Padding="5"
+                                       Text="Query Conditions"/>
+                            <TextBox Name="QueryBox"
+                                    Grid.Row="2" Grid.Column="1"
+                                    HorizontalAlignment="Stretch" Margin="5"
+                                    Loaded="handle_query_string_changed"
+                                    TextChanged="handle_query_string_changed" />
 
                             <!-- Data Loader Selector -->
-                            <TextBlock Grid.Row="2" HorizontalAlignment="Right" Padding="5,0">
+                            <TextBlock Grid.Row="3" HorizontalAlignment="Right" Padding="5,0">
                             Select Data Loader
                             </TextBlock>
                             <ComboBox Name="DataLoaderSelector"
-                                    Grid.Row="2" Grid.Column="1"
+                                    Grid.Row="3" Grid.Column="1"
                                     HorizontalAlignment="Stretch" Margin="5,0"
                                     Loaded="handle_data_loader_selector_loaded"
                                     SelectionChanged="handle_data_loader_selector_changed" />
 
                             <!-- Custom Data Loader Fields -->
-                            <Grid Grid.Row="3" Grid.ColumnSpan="2"
+                            <Grid Grid.Row="4" Grid.ColumnSpan="2"
                                   Name="CustomDataLoaderGrid"
                                   Loaded="handle_populate_data_loader_grid" 
                                   Margin="20, 10">
@@ -373,6 +389,10 @@
                 <!-- Debug Call The API -->
                 <Grid Name="DebugButtons"
                         Grid.Row="2" Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="*" />
@@ -393,13 +413,18 @@
                         Click="handle_load_data_debug" Height="20" VerticalAlignment="Top"/>
                     <Button Grid.Column="2"
                         Name="ConvertDataButton" Content="Convert Data" Background="LightCyan"
-                        Width="100" Margin="10,0"
+                        Width="100" Margin="0,0"
                         Click="handle_convert_data_debug"/>
                     <Button Grid.Column="3"
                         HorizontalAlignment="Left"
                         Name="CallApiButton" Content="Send Data" Background="LightCyan"
                         Width="100" Margin="10,0"
                         Click="handle_send_data_debug"/>
+                    <Button Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3"
+                        HorizontalAlignment="Center"
+                        Name="ViewResponseDebug" Content="View Response" Background="LightCyan"
+                        Width="150" Margin="5"
+                        Click="handle_view_response"/>
 
                 </Grid>
 
@@ -408,6 +433,7 @@
                         Grid.Row="3" Margin="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
@@ -419,6 +445,12 @@
                         Background="Aquamarine" 
                         Click="handle_send_data">
                         Send Data To Rinchem
+                    </Button>
+                    <Button Name="ViewResponse"
+                        Grid.Row="3" Grid.Column="2" Padding="20,3" Margin="10,2,0,2"
+                        Background="LightCyan" 
+                        Click="handle_view_response">
+                        View Response
                     </Button>
                 </Grid>
             </Grid>

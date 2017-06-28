@@ -46,6 +46,10 @@ namespace RinchemApiIntegrationConsole.ASN
             return validated;
         }
 
+        public String getObjectName()
+        {
+            return rqst.asn.Name;
+        }
         public void setObjectName(String name)
         {
             rqst.asn.Name = name;
@@ -56,7 +60,7 @@ namespace RinchemApiIntegrationConsole.ASN
         }
     }
 
-    class Request
+    public class Request
     {
         public ASN asn;
         public List<LineItems> lineItems;
@@ -97,6 +101,7 @@ namespace RinchemApiIntegrationConsole.ASN
         public String Carrier_Name__c;
         public String Purchase_Order_Number__c;
         public String Product_Owner_Id__c;
+        public String CreatedDate;
     }
 
     public class LineItems
@@ -111,4 +116,5 @@ namespace RinchemApiIntegrationConsole.ASN
         public String Hold_Code__c;
         public String Serial_Number__c;
     }
+
 }

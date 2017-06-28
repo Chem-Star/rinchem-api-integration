@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using RinchemApiIntegrationConsole.UiSpecific;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +67,8 @@ namespace RinchemApiIntegrator.ApiSpecific
 
             var responseMessage = await _httpClient.SendAsync(request).ConfigureAwait(false);
             var response = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            ConsoleLogger.log(response);
 
             if (responseMessage.IsSuccessStatusCode)
             {
