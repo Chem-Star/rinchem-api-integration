@@ -171,7 +171,7 @@ Accepted *Common Query* types and examples are listed below.
 <tr><td>Created Between Dates</td><td><b>?</b>CreatedDate&lt;2017-06-27T00:00:00Z <b>and</b> CreatedDate&gt;2017-06-18T00:00:00Z </td></tr>
 </Table>
 
-### Accepted Values
+## Accepted Values
 #### Accepted Carrier IDs
 For a full list of Carrier IDs please see the attached excel sheet **AcceptedValues.xlsx**, under the *Carrier_Id* tab.
 <Table>
