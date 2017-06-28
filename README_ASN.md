@@ -27,7 +27,7 @@ Append the following suffix to your Salesforce **instance_url**.
 </Table>
 
 
-### Body Payload: 
+### Body Payload - POST and PATCH: 
 For a new ASN request the API expects a body payload with the JSON format displayed below. The demonstrated payload shows all fields that the API can handle, though some of these are not required. Please see the following sections for minimum permissible payloads for each VERB type.
 
 In order to make the payloads more accessible, a C# object representation has been created which mimics this format. By building up the C# representation, the JSON body can then be created with a simple serialize call with a JSON library such as 'Newtonsoft.JSON'.
@@ -140,6 +140,36 @@ In order to use the PATCH verb, the payload should provide the unique order id (
 	}
 }
 ```
+
+### Request Format - GET: 
+To retrieve ASN data a get call must be submitted. Similar to the POST and PATCH calls, you will once again need to follow the authentication procedure to acquire your **instance_url** and **authentication_token**; the **ASN API Suffix**. However, no payload is sent with the request, rather, the desired parameters are appended to the end of the request URI. The first 10 ASNs matching the request will then be returned in a payload with format as described below. 
+
+Rinchem has provided a few methods to accomplish queries. *Common Queries* require a query type and a value. *Custom Queries* give the developer the ability to build their own queries using the SOQL format. 
+
+#### Common Queries
+ All *Common Queries* follow the same basic format.
+ ```
+<instance_url>/<API_suffix>?<query_type>=<query_value>
+```
+For example,
+```
+https://rinchem--CSportalQA.cs66.my.salesforce.com/services/apexrest/v1/ASN__c?Name=ASN0000000457
+```
+Accepted *Common Query* types and examples are listed below.
+<Table>
+<tr><th>Query Type</th><th>Related Fields</th><th>Example Query Request</th></tr>
+<tr><td>Name</td><td>Name</td><td><b>?</b>Name=ASN-00305</td></tr>
+<tr><td>ShipId</td><td>Shipment_Id__c</td><td><b>?</b>ShipId=0080121374</td></tr>
+</Table>
+
+#### Custom Queries
+*Custom Queries* have a similar format, however, < query_type> will always be 'query' and < query_value> will be custom query conditions written with SOQL format. A few examples are shown below.
+<Table>
+<tr><th>Description</th><th>Example Query Request</th></tr>
+<tr><td>Expires On Date</td><td><b>?</b>Expiration_Date__c='2017-06-28'</td></tr>
+<tr><td>Created After Date</td><td><b>?</b>CreatedDate>2017-06-27T00:00:00Z</td></tr>
+<tr><td>Created Between Dates</td><td><b>?</b>CreatedDate&lt;2017-06-27T00:00:00Z <b>and</b> CreatedDate&gt;2017-06-18T00:00:00Z </td></tr>
+</Table>
 
 ### Accepted Values
 #### Accepted Carrier IDs
