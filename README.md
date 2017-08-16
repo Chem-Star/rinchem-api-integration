@@ -19,7 +19,7 @@ If you are looking to get started with the C# source code, please check out the 
 ## API Calls
 
 ### Authentication
-Prior to making any API calls, you will need to retrieve an *AccessToken* and an *InstanceUrl* from Salesforce. In order to retrieve these, an HTTP 'POST' request should be made to your desired **Authentication Url** (see below). Then, in the request body you must provide key value pairs corresponding to your consumer key, consumer secret, username, password and security token. The **key -> value** mapping is shown below.
+Prior to making any API calls, you will need to retrieve an *AccessToken* and an *InstanceUrl* from Salesforce. In order to retrieve these, an HTTP 'POST' request should be made to your desired **Authentication Url** (see below). Then, as request parameters you must provide key value pairs corresponding to your consumer key, consumer secret, username, password and security token. The **key -> value** mapping is shown below.
 
 #### Authentication URLs:
 Sandbox (Test)
@@ -31,7 +31,7 @@ Production (Live)
 https://login.salesforce.com/services/oauth2/token
 ```
 #### Authentication (Key -> Value) Mapping
-Please note that **key -> value** pairs are not pure json and sending this as a json body may not work. If you are unsure of these values, please see the **My Credentials** section at the bottom of this page.
+Please note that **key -> value** pairs are not pure json and sending this as a json body may not work, they should be passed as parameters in the address. If you are unsure of these values, please see the **My Credentials** section at the bottom of this page.
 <table>
 <tr><th>Key</th><th>Value</th></tr>
 <tr><td>"grant_type"	</td><td>"password"				</td></tr>
