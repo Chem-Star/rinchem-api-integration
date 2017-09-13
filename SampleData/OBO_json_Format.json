@@ -1,42 +1,93 @@
-{
-	"rqst": {
-		"obo": {
-			"Name": "",
-			"Action__c": "",
-			"Message_Id__c": "",
-			"Order_Date__c": "2017-04-20",
-			"Rinchem_Supplier_Id__c": "XXX",
-			"Purchase_Order_Number__c": "123456",
-			"Ship_To_Customer__c": "EXAMPL",
-			"Ship_To_Name__c": "Example Supplier, Inc",
-			"Freight_Payment_Terms_Type__c": "",
-			"Bill_To_Customer_Code__c": "",
-			"Bill_To_Name__c": "",
-			"Desired_Delivery_Date__c": "2017-04-21",
-			"Carrier_Service__c": "RINCHEM",
-			"From_Warehouse_Code__c": "Chandler",
-			"Order_Type__c": "PO",
-			"Product_Owner_Id__c": "EXA"
-		},
-		"lineItems": [{
-			"Name": "1",
-			"Outbound_Order__c": "",
-			"Hold_Code__c": "",
-			"Inventory_Detail__c": "",
-			"Lot_Number__c": "170084",
-			"Rinchem_Part_Number__c": "",
-			"Quantity__c": "4",
-			"Unit_of_Measure__c": "DRUM"
-		},		
+{ 
+	"rqst": 
+	{
+		"obo": 
 		{
-			"Name": "2",
-			"Outbound_Order__c": "",
-			"Hold_Code__c": "",
-			"Inventory_Detail__c": "",
-			"Lot_Number__c": "",
-			"Rinchem_Part_Number__c": "",
-			"Quantity__c": "",
-			"Unit_of_Measure__c": ""
-		}]
+			"Name": "OBO-0012",
+			"Action__c": "NEW",
+			"Bill_To_Customer_Code__c": "INTEL",
+			"Bill_To_Name__c": "Intel",
+			"Carrier_Service__c": "FEDEX-FRT",
+			"Desired_Delivery_Date__c": "2017-05-30",
+			"Freight_Payment_Terms_Type__c": "3",
+			"Order_Date__c": "2017-05-29",
+			"Order_Type__c": "SO",
+			"Product_Owner_ID__c": "INTEL",
+			"Purchase_Order_Number__c": "MULTIPLE",
+			"Rinchem_Supplier_Id__c": "JSR",
+			"From_Warehouse_Code__c": "11",
+			"Ship_To_Customer__c": "INTEL",
+			"Ship_To_Name__c": "Intel (Test)",
+			"Ship_To_Address__c": "12345 Main St.",
+			"Ship_To_City__c": "City",
+			"Ship_To_State__c": "State",
+			"Ship_To_Postal_Code__c": "98765",
+			"Ship_To_Country__c": "Country",
+			"Third_Party_Billing_Name__c": "Intel (Test)",
+			"Third_Party_Billing_PO_Number__c": "654321",
+			"Third_Party_Billing_Address__c": "12345 Main St.",
+			"Third_Party_Billing_City__c": "City",
+			"Third_Party_Billing_State__c": "State",
+			"Third_Party_Billing_Postal_Code__c": "98765",
+			"Third_Party_Billing__Country__c": "Country",
+			"Importer_of_Record__c": "Supplier",
+			"International_Shipment__c": "true",
+			"Special_Shipment_Instructions__c": "My shipment is special!",
+			"Approver_Company__c": "Example Approver",
+			"Approver_First_Name__c": "Bob",	
+			"Approver_Last_Name__c": "Saget",
+			"Approver_Email__c": "bob.saget@gmail.com",
+			"Approver_Phone__c": "5059876543",
+			"Requestor_Phone__c": "5058765432",	
+			"Requestor_Email__c": "johnstamos@gmail.com",	
+			"Carrier_Account_Number__c": "674524"
+		},
+		"lineItems": 
+		[
+			{
+				"lineItem": 
+				{
+					"Name": "1",
+					"Hold_Code__c": "OH",
+					"Lot_Number__c": "7D0997",
+					"Quantity__c": 4,
+					"Rinchem_Part_Number__c": "110223_INTEL",
+					"Unit_of_Measure__c": "Bottle",
+					"Purchase_Order_Number__c": "123456",
+					"Owner_Part_Number__c": "500055952",
+					"Supplier_Part_Number__c": "WPR-1201K-10J"
+				},
+				"lineItemAttributes": 
+				[
+					{
+						"Name" : "3",
+						"Value__c" : "PQ",
+						"Warehouse__c" : "11"
+					}
+				]
+			},
+			{
+				"lineItem": 
+				{
+					"Name": "2",
+					"Hold_Code__c": "OH",
+					"Lot_Number__c": "7D0997",
+					"Quantity__c": 4,
+					"Rinchem_Part_Number__c": "110223_INTEL",
+					"Unit_of_Measure__c": "Bottle",
+					"Purchase_Order_Number__c": "123456",
+					"Owner_Part_Number__c": "500055952",
+					"Supplier_Part_Number__c": "WPR-1201K-10J"
+				},
+				"lineItemAttributes": 
+				[
+					{
+						"Name" : "3",
+						"Value__c" : "PQ",
+						"Warehouse__c" : "11"
+					}
+				]
+			}
+		]
 	}
 }
