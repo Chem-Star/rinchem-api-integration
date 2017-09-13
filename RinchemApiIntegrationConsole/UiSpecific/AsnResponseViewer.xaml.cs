@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RinchemApiIntegrationConsole;
 using RinchemApiIntegrationConsole.ASN;
+using RinchemApiIntegrationConsole.UiSpecific;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,63 +24,48 @@ namespace RinchemApiIntegrator.UiSpecific
     /// </summary>
     public partial class AsnResponseViewer : Window
     {
-        private AsnObject asnObject;
-        private List<AsnObject> asnObjects = new List<AsnObject>();
+        private Response asnWrapper;
+        private AsnResponseObject asnResponseObject;
         private int currentAsn = 0;
         private int currentLineItem = 0;
-        public AsnResponseViewer(SalesForceResponse response)
+        public AsnResponseViewer(AsnResponseObject response)
         {
-            String serial;
+            if (response.asns == null) response.asns = new List<Response>();
+
             if (response.asn != null)
             {
-                AsnObject asnObject = new AsnObject(); asnObject.initialize();
+                Response wrapper = new Response();
+                wrapper.asn = response.asn;
+                wrapper.lineItems = response.lineItems;
+                wrapper.statuses = response.statuses;
 
-                serial = JsonConvert.SerializeObject(response.asn);
-                asnObject.rqst.asn = JsonConvert.DeserializeObject<ASN>(serial);
-
-                serial = JsonConvert.SerializeObject(response.lineItems);
-                asnObject.rqst.lineItems = JsonConvert.DeserializeObject<List<LineItems>>(serial);
-
-                asnObjects.Add(asnObject);
+                response.asns.Add(wrapper);
             }
-            else if(response.asns != null)
-            {
-                serial = JsonConvert.SerializeObject(response.asns);
-                List<Request> rqsts = JsonConvert.DeserializeObject< List<Request>>(serial);
-
-                foreach(Request rqst in rqsts)
-                {
-                    AsnObject asnObject = new AsnObject(); asnObject.initialize();
-                    asnObject.rqst = rqst;
-
-                    asnObjects.Add(asnObject);
-                }
-            }
-
+            asnResponseObject = response;
 
             InitializeComponent();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (asnObjects.Count > 0) viewAsn(0);
+            if (asnResponseObject.asns.Count > 0) viewAsn(0);
         }
 
         private void viewAsn(int i)
         {
 
             List<KeyValuePair<String, String>> fields = new List<KeyValuePair<string, string>>();
-            if (asnObjects.Count <= i)
+            if (asnResponseObject.asns.Count <= i)
             {
                 currentAsn = 0;
                 AsnDetailLeft.ItemsSource = fields; return;
             }
 
-            asnObject = asnObjects.ElementAt(i);
+            asnWrapper = asnResponseObject.asns.ElementAt(i);
             currentAsn = i;
 
             AsnNumbers.Children.RemoveRange(1, AsnNumbers.Children.Count - 1);
-            for (int j = 0; j < asnObjects.Count; j++)
+            for (int j = 0; j < asnResponseObject.asns.Count; j++)
             {
                 Button asn = new Button();
                 asn.BorderThickness = new Thickness(0);
@@ -91,46 +77,50 @@ namespace RinchemApiIntegrator.UiSpecific
             }
 
             fields = new List<KeyValuePair<string, string>>();
-            fields.Add(new KeyValuePair<string, string>("ASN", asnObject.rqst.asn.Name));
-            fields.Add(new KeyValuePair<string, string>("ASN Recipien tId", asnObject.rqst.asn.ASN_Recipient_Id__c));
-            fields.Add(new KeyValuePair<string, string>("ASN Recipient Name", asnObject.rqst.asn.ASN_Recipient_Name__c));
-            fields.Add(new KeyValuePair<string, string>("Date ASN Sent", asnObject.rqst.asn.Date_ASN_Sent__c));
-            fields.Add(new KeyValuePair<string, string>("SF Created Date", asnObject.rqst.asn.CreatedDate));
-            fields.Add(new KeyValuePair<string, string>("Estimated Arrival Date", asnObject.rqst.asn.Estimated_Arrival_Date__c));
-            fields.Add(new KeyValuePair<string, string>("Estimated Ship Date", asnObject.rqst.asn.Estimated_Ship_Date__c));
-            fields.Add(new KeyValuePair<string, string>("Order Type", asnObject.rqst.asn.Order_Type__c));
+            if (asnWrapper.statuses != null && asnWrapper.statuses.Count > 0)
+            {
+                fields.Add(new KeyValuePair<string, string>("STATUS", asnWrapper.statuses.ElementAt(0).Name));
+            }
+            fields.Add(new KeyValuePair<string, string>("ASN", asnWrapper.asn.Name));
+            fields.Add(new KeyValuePair<string, string>("ASN Recipien tId", asnWrapper.asn.ASN_Recipient_Id__c));
+            fields.Add(new KeyValuePair<string, string>("ASN Recipient Name", asnWrapper.asn.ASN_Recipient_Name__c));
+            fields.Add(new KeyValuePair<string, string>("Date ASN Sent", asnWrapper.asn.Date_ASN_Sent__c));
+            fields.Add(new KeyValuePair<string, string>("SF Created Date", asnWrapper.asn.CreatedDate));
+            fields.Add(new KeyValuePair<string, string>("Estimated Arrival Date", asnWrapper.asn.Estimated_Arrival_Date__c));
+            fields.Add(new KeyValuePair<string, string>("Estimated Ship Date", asnWrapper.asn.Estimated_Ship_Date__c));
+            fields.Add(new KeyValuePair<string, string>("Order Type", asnWrapper.asn.Order_Type__c));
             AsnDetailLeft.ItemsSource = fields;
 
             fields = new List<KeyValuePair<string, string>>();
-            fields.Add(new KeyValuePair<string, string>("ShipmentId", asnObject.rqst.asn.Shipment_Id__c));
-            fields.Add(new KeyValuePair<string, string>("OrderNumber", asnObject.rqst.asn.Order_Number__c));
-            fields.Add(new KeyValuePair<string, string>("PurchaseOrderNumber", asnObject.rqst.asn.Purchase_Order_Number__c));
-            fields.Add(new KeyValuePair<string, string>("ProductOwnerId", asnObject.rqst.asn.Product_Owner_Id__c));
-            fields.Add(new KeyValuePair<string, string>("SupplierName", asnObject.rqst.asn.Supplier_Name__c));
-            fields.Add(new KeyValuePair<string, string>("RinchemSupplierId", asnObject.rqst.asn.Rinchem_Supplier_Id__c));
-            fields.Add(new KeyValuePair<string, string>("CarrierId", asnObject.rqst.asn.Carrier_Id__c));
-            fields.Add(new KeyValuePair<string, string>("CarrierName", asnObject.rqst.asn.Carrier_Name__c));
-            fields.Add(new KeyValuePair<string, string>("BOLNumber", asnObject.rqst.asn.BOL_Number__c));
+            fields.Add(new KeyValuePair<string, string>("ShipmentId", asnWrapper.asn.Shipment_Id__c));
+            fields.Add(new KeyValuePair<string, string>("OrderNumber", asnWrapper.asn.Order_Number__c));
+            fields.Add(new KeyValuePair<string, string>("PurchaseOrderNumber", asnWrapper.asn.Purchase_Order_Number__c));
+            fields.Add(new KeyValuePair<string, string>("ProductOwnerId", asnWrapper.asn.Product_Owner_Id__c));
+            fields.Add(new KeyValuePair<string, string>("SupplierName", asnWrapper.asn.Supplier_Name__c));
+            fields.Add(new KeyValuePair<string, string>("RinchemSupplierId", asnWrapper.asn.Rinchem_Supplier_Id__c));
+            fields.Add(new KeyValuePair<string, string>("CarrierId", asnWrapper.asn.Carrier_Id__c));
+            fields.Add(new KeyValuePair<string, string>("CarrierName", asnWrapper.asn.Carrier_Name__c));
+            fields.Add(new KeyValuePair<string, string>("BOLNumber", asnWrapper.asn.BOL_Number__c));
             AsnDetailRight.ItemsSource = fields;
 
             fields = new List<KeyValuePair<string, string>>();
-            fields.Add(new KeyValuePair<string, string>("Destination Warehouse Code", asnObject.rqst.asn.Destination_Warehouse_Code__c));
-            fields.Add(new KeyValuePair<string, string>("Destination Name", asnObject.rqst.asn.Destination_Name__c));
-            fields.Add(new KeyValuePair<string, string>("Destination Address", asnObject.rqst.asn.Destination_Address__c));
-            fields.Add(new KeyValuePair<string, string>("Destination City", asnObject.rqst.asn.Destination_City__c));
-            fields.Add(new KeyValuePair<string, string>("Destination State", asnObject.rqst.asn.Destination_State__c));
-            fields.Add(new KeyValuePair<string, string>("Destination Postal Code", asnObject.rqst.asn.Destination_Postal_Code__c));
-            fields.Add(new KeyValuePair<string, string>("Destination Country", asnObject.rqst.asn.Destination_Country__c));
+            fields.Add(new KeyValuePair<string, string>("Destination Warehouse Code", asnWrapper.asn.Destination_Warehouse_Code__c));
+            fields.Add(new KeyValuePair<string, string>("Destination Name", asnWrapper.asn.Destination_Name__c));
+            fields.Add(new KeyValuePair<string, string>("Destination Address", asnWrapper.asn.Destination_Address__c));
+            fields.Add(new KeyValuePair<string, string>("Destination City", asnWrapper.asn.Destination_City__c));
+            fields.Add(new KeyValuePair<string, string>("Destination State", asnWrapper.asn.Destination_State__c));
+            fields.Add(new KeyValuePair<string, string>("Destination Postal Code", asnWrapper.asn.Destination_Postal_Code__c));
+            fields.Add(new KeyValuePair<string, string>("Destination Country", asnWrapper.asn.Destination_Country__c));
             DateDetailLeft.ItemsSource = fields;
 
             fields = new List<KeyValuePair<string, string>>();
-            fields.Add(new KeyValuePair<string, string>("Ship From Supplier", asnObject.rqst.asn.Ship_From_Supplier__c));
-            fields.Add(new KeyValuePair<string, string>("Origin Id", asnObject.rqst.asn.Origin_Id__c));
-            fields.Add(new KeyValuePair<string, string>("Origin StreetAddress", asnObject.rqst.asn.Origin_Street_Address__c));
-            fields.Add(new KeyValuePair<string, string>("Origin City", asnObject.rqst.asn.Origin_City__c));
-            fields.Add(new KeyValuePair<string, string>("Origin State", asnObject.rqst.asn.Origin_State__c));
-            fields.Add(new KeyValuePair<string, string>("Origin Postal Code", asnObject.rqst.asn.Origin_Postal_Code__c));
-            fields.Add(new KeyValuePair<string, string>("Origin Country", asnObject.rqst.asn.Origin_Country__c));
+            fields.Add(new KeyValuePair<string, string>("Ship From Supplier", asnWrapper.asn.Ship_From_Supplier__c));
+            fields.Add(new KeyValuePair<string, string>("Origin Id", asnWrapper.asn.Origin_Id__c));
+            fields.Add(new KeyValuePair<string, string>("Origin StreetAddress", asnWrapper.asn.Origin_Street_Address__c));
+            fields.Add(new KeyValuePair<string, string>("Origin City", asnWrapper.asn.Origin_City__c));
+            fields.Add(new KeyValuePair<string, string>("Origin State", asnWrapper.asn.Origin_State__c));
+            fields.Add(new KeyValuePair<string, string>("Origin Postal Code", asnWrapper.asn.Origin_Postal_Code__c));
+            fields.Add(new KeyValuePair<string, string>("Origin Country", asnWrapper.asn.Origin_Country__c));
             DateDetailRight.ItemsSource = fields;
 
             viewLineItem(0);
@@ -141,7 +131,7 @@ namespace RinchemApiIntegrator.UiSpecific
             List<KeyValuePair<String, String>> fields = new List<KeyValuePair<string, string>>();
             LineItemNumbers.Children.RemoveRange(1, LineItemNumbers.Children.Count - 1);
 
-            if (asnObject.rqst.lineItems.Count <= i)
+            if (asnWrapper.lineItems.Count <= i)
             {
                 currentLineItem = 0;
                 LineItemDataLeft.ItemsSource = fields;
@@ -151,7 +141,7 @@ namespace RinchemApiIntegrator.UiSpecific
 
 
             currentLineItem = i;
-            for (int j = 0; j < asnObject.rqst.lineItems.Count; j++)
+            for (int j = 0; j < asnWrapper.lineItems.Count; j++)
             {
                 Button li = new Button();
                 li.BorderThickness = new Thickness(0);
@@ -162,19 +152,19 @@ namespace RinchemApiIntegrator.UiSpecific
                 LineItemNumbers.Children.Add(li);
             }
 
-            fields.Add(new KeyValuePair<string, string>("ASN #", asnObject.rqst.asn.Name));
-            fields.Add(new KeyValuePair<string, string>("Line Item #", asnObject.rqst.lineItems.ElementAt(currentLineItem).Name));
-            fields.Add(new KeyValuePair<string, string>("Product Description", asnObject.rqst.lineItems.ElementAt(currentLineItem).Product_Description__c));
-            fields.Add(new KeyValuePair<string, string>("Product Lot Number", asnObject.rqst.lineItems.ElementAt(currentLineItem).Product_Lot_Number__c));
-            fields.Add(new KeyValuePair<string, string>("Product Expiration Date", asnObject.rqst.lineItems.ElementAt(currentLineItem).Product_Expiration_Date__c));
+            fields.Add(new KeyValuePair<string, string>("ASN #", asnWrapper.asn.Name));
+            fields.Add(new KeyValuePair<string, string>("Line Item #", asnWrapper.lineItems.ElementAt(currentLineItem).Name));
+            fields.Add(new KeyValuePair<string, string>("Product Description", asnWrapper.lineItems.ElementAt(currentLineItem).Product_Description__c));
+            fields.Add(new KeyValuePair<string, string>("Product Lot Number", asnWrapper.lineItems.ElementAt(currentLineItem).Product_Lot_Number__c));
+            fields.Add(new KeyValuePair<string, string>("Product Expiration Date", asnWrapper.lineItems.ElementAt(currentLineItem).Product_Expiration_Date__c));
             LineItemDataLeft.ItemsSource = fields;
 
             fields = new List<KeyValuePair<string, string>>();
-            fields.Add(new KeyValuePair<string, string>("Quantity", asnObject.rqst.lineItems.ElementAt(currentLineItem).Quantity__c));
-            fields.Add(new KeyValuePair<string, string>("Unit of Measure", asnObject.rqst.lineItems.ElementAt(currentLineItem).Unit_of_Measure__c));
-            fields.Add(new KeyValuePair<string, string>("Vendor Part Number", asnObject.rqst.lineItems.ElementAt(currentLineItem).Vendor_Part_Number__c));
-            fields.Add(new KeyValuePair<string, string>("Hold Code", asnObject.rqst.lineItems.ElementAt(currentLineItem).Hold_Code__c));
-            fields.Add(new KeyValuePair<string, string>("Serial Number", asnObject.rqst.lineItems.ElementAt(currentLineItem).Serial_Number__c));
+            fields.Add(new KeyValuePair<string, string>("Quantity", asnWrapper.lineItems.ElementAt(currentLineItem).Quantity__c));
+            fields.Add(new KeyValuePair<string, string>("Unit of Measure", asnWrapper.lineItems.ElementAt(currentLineItem).Unit_of_Measure__c));
+            fields.Add(new KeyValuePair<string, string>("Vendor Part Number", asnWrapper.lineItems.ElementAt(currentLineItem).Vendor_Part_Number__c));
+            fields.Add(new KeyValuePair<string, string>("Hold Code", asnWrapper.lineItems.ElementAt(currentLineItem).Hold_Code__c));
+            fields.Add(new KeyValuePair<string, string>("Serial Number", asnWrapper.lineItems.ElementAt(currentLineItem).Serial_Number__c));
             LineItemDataRight.ItemsSource = fields;
         }
 

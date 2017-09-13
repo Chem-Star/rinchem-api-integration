@@ -178,10 +178,11 @@ namespace RinchemApiIntegrationConsole.OBO
         public DataObject ConvertDataToObject()
         {
             OboObject oboObject = new OboObject();          //Initialize our ASN object
-            oboObject.rqst = new Request();                 //Initialize the request object
+            oboObject.initializeRequest();
 
-            oboObject.rqst.obo = populateObo();             //Reformat data for the ASN info object
-            oboObject.rqst.lineItems = populateLineItems(); //Reformat data for each of our line items
+            OboWrapper oboWrap = oboObject.rqstObject.rqst;
+            oboWrap.obo = populateObo();             //Reformat data for the ASN info object
+            oboWrap.lineItems = populateLineItems(); //Reformat data for each of our line items
 
             return oboObject;
         }
@@ -191,7 +192,6 @@ namespace RinchemApiIntegrationConsole.OBO
             OBO obo                           = new OBO();
             obo.Name                          = "";
             obo.Action__c                     = "";
-            obo.Message_Id__c                 = "";
             obo.Order_Date__c                         = getDateItem( 1, "Order_Date"                  );
             obo.Rinchem_Supplier_Id__c                = getStringItem( 1, "Rinchem_Supplier_Id"          );
             obo.Purchase_Order_Number__c              = getStringItem( 1, "Purchase_Order_Number"        );
@@ -202,30 +202,30 @@ namespace RinchemApiIntegrationConsole.OBO
             obo.Bill_To_Name__c                       = getStringItem( 1, "Bill_To_Name"                 );
             obo.Desired_Delivery_Date__c              = getDateItem( 1, "Desired_Delivery_Date"        );
             obo.Carrier_Service__c                    = getStringItem( 1, "Carrier_Service"              );
-            obo.Carrier_Name__c                       = getStringItem( 1, "Carrier_Name"                 );
             obo.From_Warehouse_Code__c                = getStringItem( 1, "From_Warehouse_Code"          );
             obo.Order_Type__c                         = getStringItem( 1, "Order_Type"                   );
             obo.Product_Owner_Id__c                   = getStringItem( 1, "Product_Owner_Id"             );
             return obo;
         }
 
-        private List<LineItems> populateLineItems()
+        private List<LineItemWrapper> populateLineItems()
         {
-            List<LineItems> lineItems = new List<LineItems>();
+            List<LineItemWrapper> lineItems = new List<LineItemWrapper>();
 
             for(int i=1; i<rawData.Count; i++)
             {
-                LineItems lineItem = new LineItems();
+                LineItem lineItem = new LineItem();
 
                 lineItem.Name                       = getStringItem( i, "Line_Item_#"                      );
                 lineItem.Hold_Code__c               = getStringItem( i, "Hold_Code"                          );
-                lineItem.Inventory_Detail__c        = getStringItem( i, "Inventory_Detail"                   );
                 lineItem.Lot_Number__c              = getStringItem( i, "Lot_Number"                         );
                 lineItem.Rinchem_Part_Number__c     = getStringItem( i, "Rinchem_Part_Number"                );
                 lineItem.Quantity__c                = getStringItem( i, "Quantity"                           );
                 lineItem.Unit_of_Measure__c         = getStringItem( i, "Unit_of_Measure"                    );
 
-                lineItems.Add(lineItem);
+                LineItemWrapper lineItemWrapper = new LineItemWrapper();
+                lineItemWrapper.lineItem = lineItem;
+                lineItems.Add(lineItemWrapper);
             }
 
             return lineItems;

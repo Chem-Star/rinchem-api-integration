@@ -1,5 +1,6 @@
 ﻿using RinchemApiIntegrationConsole;
 using RinchemApiIntegrationConsole.UiSpecific;
+using RinchemApiIntegrator.ApiSpecific;
 using RinchemApiIntegrator.UiSpecific;
 using System;
 using System.Collections.Generic;
@@ -67,7 +68,6 @@ namespace asnIntegratorConsole.UiSpecific
                 this.Height -= 250;
             }
         }
-
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///     Custom Data Loader View
         public void handle_populate_data_loader_grid(object sender, RoutedEventArgs e)
@@ -135,44 +135,6 @@ namespace asnIntegratorConsole.UiSpecific
             resetDataDependent();
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///     Api Action View
-        public void handle_update_api_action_grid(object sender, RoutedEventArgs e)
-        {
-            int i = 0;
-
-            if (apiManager == null ||
-                apiManager.getCurrentApiVerb() == null ) return;
-
-            switch (apiManager.getCurrentApiVerb())
-            {
-                case "POST":
-                    apiManager.setApiAction("NEW"); ApiActionNew.IsChecked = true;
-                    ApiActionNew.Visibility = Visibility.Visible;
-                    ApiActionUpdate.Visibility = Visibility.Collapsed;
-                    ApiActionCancel.Visibility = Visibility.Collapsed;
-                    ApiActionGetByName.Visibility = Visibility.Collapsed;
-                    ApiActionGetByQuery.Visibility = Visibility.Collapsed;
-                    break;
-                case "PATCH":
-                    apiManager.setApiAction("UPDATE"); ApiActionUpdate.IsChecked = true;
-                    ApiActionNew.Visibility = Visibility.Collapsed;
-                    ApiActionUpdate.Visibility = Visibility.Visible;
-                    ApiActionCancel.Visibility = Visibility.Visible;
-                    ApiActionGetByName.Visibility = Visibility.Collapsed;
-                    ApiActionGetByQuery.Visibility = Visibility.Collapsed;
-                    break;
-                case "GET":
-                    apiManager.setApiAction("GETBYNAME"); ApiActionGetByName.IsChecked = true;
-                    ApiActionNew.Visibility = Visibility.Collapsed;
-                    ApiActionUpdate.Visibility = Visibility.Collapsed;
-                    ApiActionCancel.Visibility = Visibility.Collapsed;
-                    ApiActionGetByName.Visibility = Visibility.Visible;
-                    ApiActionGetByQuery.Visibility = Visibility.Visible;
-                    break;
-            }
-            handle_update_data_information_grid(null, null);
-        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///     Api Action Dependent View
@@ -181,36 +143,56 @@ namespace asnIntegratorConsole.UiSpecific
             if (apiManager == null ||
                 apiManager.getCurrentApiAction() == null) return;
 
-            ObjectNameLabel.Text = apiManager.getCurrentApiType() + " Name";
+            ApiActionObject apiActionObject = apiManager.getApiActionObject();
 
-            switch (apiManager.getCurrentApiAction())
+            ApiActionFields.Children.RemoveRange(0, ApiActionFields.Children.Count);
+            apiActionObject.getDataInformationElements().ForEach( element =>
             {
-                case "GETBYNAME":
-                case "CANCEL":
-                    DataInformationGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
-                    DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
-                    DataInformationGrid.RowDefinitions[3].Height = new GridLength(0);
-                    DataInformationGrid.RowDefinitions[4].Height = new GridLength(0);
-                    break;
-                case "GETBYQUERY":
-                    DataInformationGrid.RowDefinitions[1].Height = new GridLength(0);
-                    DataInformationGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
-                    DataInformationGrid.RowDefinitions[3].Height = new GridLength(0);
-                    DataInformationGrid.RowDefinitions[4].Height = new GridLength(0);
-                    break;
-                case "UPDATE":
-                    DataInformationGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
-                    DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
-                    DataInformationGrid.RowDefinitions[3].Height = new GridLength(1, GridUnitType.Star);
-                    DataInformationGrid.RowDefinitions[4].Height = new GridLength(1, GridUnitType.Star);
-                    break;
-                case "NEW":
-                    DataInformationGrid.RowDefinitions[1].Height = new GridLength(0);
-                    DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
-                    DataInformationGrid.RowDefinitions[3].Height = new GridLength(1, GridUnitType.Star);
-                    DataInformationGrid.RowDefinitions[4].Height = new GridLength(1, GridUnitType.Star);
-                    break;
+                ApiActionFields.Children.Add(element);
+            });
+
+            if (apiActionObject.getUsesDataLoader())
+            {
+                DataInformationGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Auto);
+                DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);//should be deleted
+                DataInformationGrid.RowDefinitions[3].Height = new GridLength(1, GridUnitType.Auto);
+                DataInformationGrid.RowDefinitions[4].Height = new GridLength(1, GridUnitType.Auto);
             }
+            else
+            {
+                DataInformationGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Auto);
+                DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
+                DataInformationGrid.RowDefinitions[3].Height = new GridLength(0);
+                DataInformationGrid.RowDefinitions[4].Height = new GridLength(0);
+            }
+            //switch (apiManager.getCurrentApiAction())
+            //{
+            //    case "GETBYNAME":
+            //    case "CANCEL":
+            //        DataInformationGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
+            //        DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
+            //        DataInformationGrid.RowDefinitions[3].Height = new GridLength(0);
+            //        DataInformationGrid.RowDefinitions[4].Height = new GridLength(0);
+            //        break;
+            //    case "GETBYQUERY":
+            //        DataInformationGrid.RowDefinitions[1].Height = new GridLength(0);
+            //        DataInformationGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+            //        DataInformationGrid.RowDefinitions[3].Height = new GridLength(0);
+            //        DataInformationGrid.RowDefinitions[4].Height = new GridLength(0);
+            //        break;
+            //    case "UPDATE":
+            //        DataInformationGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
+            //        DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
+            //        DataInformationGrid.RowDefinitions[3].Height = new GridLength(1, GridUnitType.Star);
+            //        DataInformationGrid.RowDefinitions[4].Height = new GridLength(1, GridUnitType.Star);
+            //        break;
+            //    case "NEW":
+            //        DataInformationGrid.RowDefinitions[1].Height = new GridLength(0);
+            //        DataInformationGrid.RowDefinitions[2].Height = new GridLength(0);
+            //        DataInformationGrid.RowDefinitions[3].Height = new GridLength(1, GridUnitType.Star);
+            //        DataInformationGrid.RowDefinitions[4].Height = new GridLength(1, GridUnitType.Star);
+            //        break;
+            //}
 
         }
 
@@ -363,9 +345,7 @@ namespace asnIntegratorConsole.UiSpecific
         //Send Data
         private void handle_view_response(object sender, RoutedEventArgs e)
         {
-            asnResponseViewer = new AsnResponseViewer(apiManager.getResponse());
-            asnResponseViewer.Owner = this;
-            asnResponseViewer.Show();
+            apiManager.viewResponse(this);
         }
 
 
@@ -408,32 +388,6 @@ namespace asnIntegratorConsole.UiSpecific
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///     Handle Radio Button Changes
-        private void handle_api_type_changed(object sender, RoutedEventArgs e)
-        {
-            RadioButton apiType = sender as RadioButton;
-            apiManager.setApiType((String) apiType.Tag);
-            updateDataLoaderSelectorData();
-            DataLoaderSelector.SelectedIndex = 0;
-            handle_update_data_information_grid(null, null);
-
-            resetDataDependent();
-        }
-        private void handle_api_verb_changed(object sender, RoutedEventArgs e)
-        {
-            RadioButton apiVerb = sender as RadioButton;
-            apiManager.setApiVerb((String)apiVerb.Tag);
-            handle_update_api_action_grid(null, null);
-
-            resetDataDependent();
-        }
-        private void handle_api_action_changed(object sender, RoutedEventArgs e)
-        {
-            RadioButton apiAction = sender as RadioButton;
-            apiManager.setApiAction((String)apiAction.Tag);
-            handle_update_data_information_grid(null, null);
-
-            resetDataDependent();
-        }
         private void handle_object_name_changed(object sender, RoutedEventArgs e)
         {
             apiManager.setObjectName((sender as TextBox).Text);
@@ -598,5 +552,102 @@ namespace asnIntegratorConsole.UiSpecific
             setCallApiStatus(status);
             setSendDataStatus(status);
         }
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///     Api Type/Verb/Action Stack Views
+        public void handle_populate_api_type_grid(object sender, RoutedEventArgs e)
+        {
+            ApiTypeStack.Children.RemoveRange(0, ApiTypeStack.Children.Count);
+
+            int i = 0;
+
+            apiManager.getApiObjects().ForEach(apiObject =>
+            {
+                String apiType = apiObject.getApiType();
+
+                RadioButton option = new RadioButton();
+                option.Tag = apiType;
+                if (i == 0) option.Loaded += handle_api_type_changed;
+                option.Click += handle_api_type_changed;
+                option.GroupName = "ApiType"; option.Padding = new Thickness(10, 2, 10, 2);
+                option.Content = apiType;
+                option.IsChecked = i == 0 ? true : false;
+                ApiTypeStack.Children.Add(option);
+
+                i++;
+            });
+        }
+        public void handle_update_api_verb_grid(object sender, RoutedEventArgs e)
+        {
+            ApiVerbStack.Children.RemoveRange(0, ApiVerbStack.Children.Count);
+
+            int i = 0;
+
+            apiManager.getApiObject().getApiVerbs().ForEach(verb =>
+            {
+                RadioButton option = new RadioButton();
+                option.Tag = verb;
+                if (i == 0) option.Loaded += handle_api_verb_changed;
+                option.Click += handle_api_verb_changed;
+                option.GroupName = "ApiVerb"; option.Padding = new Thickness(10, 2, 10, 2);
+                option.Content = verb;
+                option.IsChecked = i == 0 ? true : false;
+                ApiVerbStack.Children.Add(option);
+
+                i++;
+            });
+        }
+        public void handle_update_api_action_grid(object sender, RoutedEventArgs e)
+        {
+            ApiActionStack.Children.RemoveRange(0, ApiActionStack.Children.Count);
+
+            int i = 0;
+
+            apiManager.getApiObject().getApiActions().ForEach(action =>
+            {
+                RadioButton option = new RadioButton();
+                option.Tag = action;
+                if(i==0) option.Loaded += handle_api_action_changed;
+                option.Click += handle_api_action_changed;
+                option.GroupName = "ApiAction"; option.Padding = new Thickness(10, 2, 10, 2);
+                option.Content = action;
+                option.IsChecked = i == 0 ? true : false;
+                ApiActionStack.Children.Add(option);
+
+                i++;
+            });
+        }
+
+
+        //Radio Button Changes
+        private void handle_api_type_changed(object sender, RoutedEventArgs e)
+        {
+            RadioButton apiType = sender as RadioButton;
+            apiManager.setApiType((String)apiType.Tag);
+            updateDataLoaderSelectorData();
+            DataLoaderSelector.SelectedIndex = 0;
+            handle_update_api_verb_grid(null, null);
+            handle_update_data_information_grid(null, null);
+
+            resetDataDependent();
+        }
+        private void handle_api_verb_changed(object sender, RoutedEventArgs e)
+        {
+            RadioButton apiVerb = sender as RadioButton;
+            apiManager.setApiVerb((String)apiVerb.Tag);
+            handle_update_api_action_grid(null, null);
+
+            resetDataDependent();
+        }
+        private void handle_api_action_changed(object sender, RoutedEventArgs e)
+        {
+            RadioButton apiAction = sender as RadioButton;
+            apiManager.setApiAction((String)apiAction.Tag);
+            handle_update_data_information_grid(null, null);
+
+            resetDataDependent();
+        }
+
     }
 }

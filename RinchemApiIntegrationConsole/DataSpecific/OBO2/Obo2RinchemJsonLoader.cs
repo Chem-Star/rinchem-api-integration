@@ -4,26 +4,25 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
 
-namespace RinchemApiIntegrationConsole.ASN
+namespace RinchemApiIntegrationConsole.OBO2
 {
     // Simple implementation of the data loader
-    class AsnRinchemJsonLoader : DataLoader
+    class Obo2RinchemJsonLoader : DataLoader
     {
         private String filepath { get; set; }
         private String rawData { get; set; }
 
         private Field fileLocation = new Field() { Name = "FileLocation" , Value = "" };
 
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///         **DEFINE UNIQUE NAME**              CUSTOMER MUST IMPLEMENT                                      ///
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         public String GetUniqueName()
         {
-            return "ASN - Rinchem JSON Loader";
+            return "OBO2 - Rinchem JSON Loader";
         }
 
 
@@ -62,6 +61,7 @@ namespace RinchemApiIntegrationConsole.ASN
         }
 
 
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ///         **LOAD DATA**                       CUSTOMER MUST IMPLEMENT                                      ///
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,17 +97,17 @@ namespace RinchemApiIntegrationConsole.ASN
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        ///         **CONVERT THE DATA TO ASN FORMAT**        CUSTOMER MUST IMPLEMENT                                ///
+        ///         **CONVERT THE DATA TO OBO FORMAT**        CUSTOMER MUST IMPLEMENT                                ///
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         public DataObject ConvertDataToObject()
         {
             try
             {
-                AsnObject asnObject = new AsnObject();
-                asnObject.initializeRequest();
+                Obo2Object oboObject = new Obo2Object();
+                oboObject.initializeRequest();
 
-                asnObject.rqstObject = JsonConvert.DeserializeObject<AsnRequestObject>(rawData);
-                return asnObject;
+                oboObject.rqstObject = JsonConvert.DeserializeObject<OboRequestObject>(rawData);
+                return oboObject;
             }
             catch (Exception e)
             {

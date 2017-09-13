@@ -263,34 +263,36 @@
                                    FontWeight="Bold">
                             API Type
                             </TextBlock>
-                            <StackPanel Grid.Row="2" Grid.Column="1" Margin="5">
-                                <RadioButton Click="handle_api_type_changed" Tag="ASN"
+                            <StackPanel Name="ApiTypeStack" Grid.Row="2" Grid.Column="1" Margin="5">
+                                <!--RadioButton Click="handle_api_type_changed" Tag="ASN"
                                              Loaded="handle_api_type_changed"
                                     GroupName="API" Padding="10,2" Content="ASN" IsChecked="True"/>
                                 <RadioButton Click="handle_api_type_changed" Tag="OBO"
                                     GroupName="API" Padding="10,2" Content="OBO" />
+                                <RadioButton Click="handle_api_type_changed" Tag="OBO2"
+                                    GroupName="API" Padding="10,2" Content="OBO2" /-->
                             </StackPanel>
                             <!-- API Verb Fields -->
                             <TextBlock Grid.Row="1" Grid.Column="3" HorizontalAlignment="Left"
                                    FontWeight="Bold">
                             API Verb
                             </TextBlock>
-                            <StackPanel Grid.Row="2" Grid.Column="3" Margin="5">
-                                <RadioButton Click="handle_api_verb_changed" Tag="POST"
+                            <StackPanel Name="ApiVerbStack"  Grid.Row="2" Grid.Column="3" Margin="5">
+                                <!--RadioButton Click="handle_api_verb_changed" Tag="POST"
                                                 Loaded="handle_api_verb_changed"
                                                 GroupName="Verb" Padding="10,2" Content="POST" IsChecked="True"/>
                                 <RadioButton Click="handle_api_verb_changed" Tag="PATCH"
                                                 GroupName="Verb" Padding="10,2" Content="PATCH" />
                                 <RadioButton Click="handle_api_verb_changed" Tag="GET"
-                                                GroupName="Verb" Padding="10,2" Content="GET" />
+                                                GroupName="Verb" Padding="10,2" Content="GET" /-->
                             </StackPanel>
                             <TextBlock Grid.Row="1" Grid.Column="5" HorizontalAlignment="Left"
                                 FontWeight="Bold">
                             API Action
                             </TextBlock>
                             <!-- API Action Fields -->
-                            <StackPanel Grid.Row="2" Grid.Column="5" Margin="5">
-                                <RadioButton Name="ApiActionNew"
+                            <StackPanel Name="ApiActionStack"  Grid.Row="2" Grid.Column="5" Margin="5" Loaded="handle_populate_api_type_grid">
+                                <!--RadioButton Name="ApiActionNew"
                                                 Click="handle_api_action_changed" Tag="NEW"
                                                 Loaded="handle_api_action_changed"
                                                 GroupName="ActionPost" Padding="10,2" Content="NEW" IsChecked="True"/>
@@ -305,7 +307,7 @@
                                                 GroupName="ActionGet" Padding="10,2" Content="by NAME" IsChecked="True"/>
                                 <RadioButton Name="ApiActionGetByQuery"
                                                 Click="handle_api_action_changed" Tag="GETBYQUERY"
-                                                GroupName="ActionGet" Padding="10,2" Content="by Query" />
+                                                GroupName="ActionGet" Padding="10,2" Content="by Query" /-->
                             </StackPanel>
 
                             <Separator Grid.Row="3" Grid.ColumnSpan="7" Margin="10,0"/>
@@ -334,23 +336,24 @@
                             </TextBlock>
 
                             <!-- Object Name Box -->
-                            <TextBlock Name="ObjectNameLabel" Grid.Row="1" 
+                            <StackPanel Name="ApiActionFields"  Grid.Row="1" Grid.ColumnSpan="2"/>
+                            <!--TextBlock Name="ObjectNameLabel" Grid.Row="1" 
                                        HorizontalAlignment="Right" Padding="5"
                                        Text="Object Name"/>
                             <TextBox Name="ObjectNameBox"
                                     Grid.Row="1" Grid.Column="1"
                                     HorizontalAlignment="Stretch" Margin="5"
                                     Loaded="handle_object_name_changed"
-                                    TextChanged="handle_object_name_changed" />
+                                    TextChanged="handle_object_name_changed" /-->
                             <!-- Data Loader Selector -->
-                            <TextBlock Name="QueryLabel" Grid.Row="2" 
+                            <!--TextBlock Name="QueryLabel" Grid.Row="2" 
                                        HorizontalAlignment="Right" Padding="5"
                                        Text="Query Conditions"/>
                             <TextBox Name="QueryBox"
                                     Grid.Row="2" Grid.Column="1"
                                     HorizontalAlignment="Stretch" Margin="5"
                                     Loaded="handle_query_string_changed"
-                                    TextChanged="handle_query_string_changed" />
+                                    TextChanged="handle_query_string_changed" /-->
 
                             <!-- Data Loader Selector -->
                             <TextBlock Grid.Row="3" HorizontalAlignment="Right" Padding="5,0">

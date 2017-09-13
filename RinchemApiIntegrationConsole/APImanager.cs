@@ -1,10 +1,15 @@
-﻿using RinchemApiIntegrationConsole.ASN;
+﻿using asnIntegratorConsole.UiSpecific;
+using RinchemApiIntegrationConsole.ASN;
 using RinchemApiIntegrationConsole.OBO;
+using RinchemApiIntegrationConsole.OBO2;
 using RinchemApiIntegrationConsole.UiSpecific;
+using RinchemApiIntegrator.ApiSpecific;
+using RinchemApiIntegrator.UiSpecific;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RinchemApiIntegrationConsole
 {
@@ -14,22 +19,29 @@ namespace RinchemApiIntegrationConsole
     /// </summary>
     public class APImanager
     {
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// REGISTER ANY CUSTOM DATA LOADERS HERE
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        private static List<DataLoader> AsnDataLoaders = new List<DataLoader>() { new AsnRinchemExcelLoader(), new AsnRinchemJsonLoader() };
-        private static List<DataLoader> OboDataLoaders = new List<DataLoader>() { new OboRinchemExcelLoader(), new OboRinchemJsonLoader() };
+        //private static List<DataLoader> AsnDataLoaders = new List<DataLoader>() { new AsnRinchemExcelLoader(), new AsnRinchemJsonLoader() };
+        //private static List<DataLoader> OboDataLoaders = new List<DataLoader>() { new OboRinchemExcelLoader(), new OboRinchemJsonLoader() };
+        //private static List<DataLoader> Obo2DataLoaders = new List<DataLoader>() { new Obo2RinchemJsonLoader() };
 
         private DataLoader dataLoader { get; set; }                 // Interface responsible for loading and converting data
         private DataObject dataObject { get; set; }                 // Interface responsible for defining the model type
+
+        //private static List<DataObject> dataObjects = new List<DataObject>() { new AsnObject(), new OboObject(), new Obo2Object() };
+
+        private List<ApiObject> apiObjects;
+        private ApiObject apiObject;
 
         private static Profiles profiles { get; set; }              // Contains all prior saved Profiles
 
         private SalesForceConnection sfConnection { get; set; }     // Manages the salesforce connection
         private Profile profile { get; set; }                       // The profile that we use to connect to salesforce
-        private String apiVerb { get; set; }                        // The verb we use during the API call
-        private String apiType { get; set; }                        // The api that we are interested in calling
-        private String apiAction { get; set; }                      // The action that we would like the API to perform
+        //private String apiVerb { get; set; }                        // The verb we use during the API call
+        //private String apiType { get; set; }                        // The api that we are interested in calling
+        //private String apiAction { get; set; }                      // The action that we would like the API to perform
         private String objectName { get; set; }                     // The name of the DataObject that we would like the API to handle
 
         private String queryString { get; set; }                    // Used to get desired ASNs
@@ -37,44 +49,49 @@ namespace RinchemApiIntegrationConsole
         private Boolean areCredentialsVerified = false;
         private Boolean useValidation = true;
 
-        private SalesForceResponse response;
-
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Constructor -- needs ui so that it can update the logbox
         public APImanager()
         {
+            apiObjects = ApiObjects.getApiObjects(this);
             profiles = new Profiles();
-            dataLoader = AsnDataLoaders[0];
-            apiVerb = "POST";
-            apiType = "ASN";
-            apiAction = "NEW";
+            apiObject = apiObjects[0];
+            //dataLoader = AsnDataLoaders[0];
+            //apiVerb = "POST";
+            //apiType = "ASN";
+            //apiAction = "NEW";
             objectName = "";
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // DATA LOADERS
-        public List<DataLoader> getAllDataLoaders()
-        {
-            List<DataLoader> dataLoaders = new List<DataLoader>();
-            dataLoaders.AddRange(AsnDataLoaders);
-            dataLoaders.AddRange(OboDataLoaders);
-            return dataLoaders;
-        }
+        //public List<DataLoader> getAllDataLoaders()
+        //{
+        //    List<DataLoader> dataLoaders = new List<DataLoader>();
+        //    dataLoaders.AddRange(AsnDataLoaders);
+        //    dataLoaders.AddRange(OboDataLoaders);
+        //    dataLoaders.AddRange(Obo2DataLoaders);
+        //    return dataLoaders;
+        //}
         public List<DataLoader> getApiDataLoaders()
         {
-            switch (apiType)
-            {
-                case "ASN":
-                    return AsnDataLoaders;
-                case "OBO":
-                    return OboDataLoaders;
-                default:
-                    Console.WriteLine("Couldn't find the specified API");
-                    return null;
-            }
+            return apiObject.getDataLoaders();
+            //switch (apiType)
+            //{
+            //    case "ASN":
+            //        return AsnDataLoaders;
+            //    case "OBO":
+            //        return OboDataLoaders;
+            //    case "OBO2":
+            //        return Obo2DataLoaders;
+            //    default:
+            //        Console.WriteLine("Couldn't find the specified API");
+            //        return null;
+            //}
         }
         public DataLoader getCurrentDataLoader()
         {
+            //return apiObject.getCurrentDataLoader();
             return dataLoader;
         }
         public void setCurrentDataLoader(String typeName)
@@ -83,8 +100,8 @@ namespace RinchemApiIntegrationConsole
             {
                 return;
             }
-
-            dataLoader = getAllDataLoaders().Find(x => x.GetUniqueName() == typeName);
+            
+            dataLoader = apiObject.getDataLoaders().Find(x => x.GetUniqueName() == typeName);
             if (dataLoader == null) ConsoleLogger.log("Couldn't find the specified DataLoader" + typeName);
         }
 
@@ -138,35 +155,46 @@ namespace RinchemApiIntegrationConsole
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // API Setup Specific
+        public List<ApiObject> getApiObjects() { return apiObjects; }
+        public ApiObject getApiObject() { return apiObject; }
+        public ApiActionObject getApiActionObject() { return apiObject.getApiActionObject(); }
+
         public void setApiVerb(String verb)
         {
-            apiVerb = verb;
+            apiObject.setApiVerb(verb);
+            //apiVerb = verb;
         }
         public void setApiType(String api)
         {
-            apiType = api;
-            switch (apiType)
-            {
-                case "ASN":
-                    dataObject = new AsnObject();
-                    ((AsnObject)dataObject).initialize();
-                    break;
-                case "OBO":
-                    dataObject = new OboObject();
-                    ((OboObject)dataObject).initialize();
-                    break;
-                default:
-                    ConsoleLogger.log("API Type Not Found");
-                    return;
-            }
+            apiObject = apiObjects.Find(x => x.getApiType() == api);
+            dataObject = apiObject.getDataObject();
+            //apiType = api;
+            //switch (apiType)
+            //{
+            //    case "ASN":
+            //        dataObject = new AsnObject();
+            //        break;
+            //    case "OBO":
+            //        dataObject = new OboObject();
+            //        break;
+            //    case "OBO2":
+            //        dataObject = new Obo2Object();
+            //        break;
+            //    default:
+            //        ConsoleLogger.log("API Type Not Found");
+            //        return;
+            //}
+            //dataObject.initializeRequest();
         }
         public void setApiAction(String action)
         {
-            apiAction = action;
+            apiObject.setApiAction(action);
+            //apiAction = action;
         }
         public void setObjectName(String name)
         {
             objectName = name;
+            dataObject.setObjectName(name);
         }
         public void setQueryString(String query)
         {
@@ -179,15 +207,18 @@ namespace RinchemApiIntegrationConsole
 
         public String getCurrentApiType()
         {
-            return apiType;
+            return apiObject.getApiType();
+            //return apiType;
         }
         public String getCurrentApiVerb()
         {
-            return apiVerb;
+            return apiObject.getApiVerb();
+            //return apiVerb;
         }
         public String getCurrentApiAction()
         {
-            return apiAction;
+            return apiObject.getApiAction();
+            //return apiAction;
         }
         public String getCurrentObjectName()
         {
@@ -199,13 +230,18 @@ namespace RinchemApiIntegrationConsole
             useValidation = value;
         }
 
-        public void setResponse(SalesForceResponse response)
+        public void setResponse(String response)
         {
-            this.response = response;
+            apiObject.deserializeResponse(response);
+            //dataObject.deserializeResponse(response);
         }
-        public SalesForceResponse getResponse()
+        public void viewResponse(ApiUserConsole console)
         {
-            return this.response;
+            apiObject.viewResponse(console);
+
+            //Window dataResponseViewer = dataObject.getResponseView();
+            //dataResponseViewer.Owner = console;
+            //dataResponseViewer.Show();
         }
 
 
@@ -288,11 +324,18 @@ namespace RinchemApiIntegrationConsole
                     case "OBO":
                         dataObject = new OboObject();
                         break;
+                    case "OBO2":
+                        dataObject = new Obo2Object();
+                        break;
                     default:
                         Console.WriteLine("The specified api type wasn't found");
                         break;
                 }
             }
+
+            String apiAction = apiObject.getApiAction();
+            String apiVerb = apiObject.getApiVerb();
+            String apiType = apiObject.getApiType();
 
             dataObject.setAction(apiAction);
             dataObject.setObjectName( (apiAction != "NEW") ? objectName : "");

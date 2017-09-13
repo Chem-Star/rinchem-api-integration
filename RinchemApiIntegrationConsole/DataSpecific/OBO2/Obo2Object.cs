@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace RinchemApiIntegrationConsole.OBO
+namespace RinchemApiIntegrationConsole.OBO2
 {
-    class OboObject : DataObject
+    class Obo2Object : DataObject
     {
         public OboRequestObject rqstObject = new OboRequestObject();     //This is serialized and sent to the API
         public OboResponseObject respObject = new OboResponseObject();    //This is populated by deserializing the API json response
@@ -35,7 +35,7 @@ namespace RinchemApiIntegrationConsole.OBO
 
         public Window getResponseView()
         {
-            return new OboResponseViewer(respObject);
+            return new Obo2ResponseViewer(respObject);
         }
 
 
@@ -66,7 +66,7 @@ namespace RinchemApiIntegrationConsole.OBO
 
         public String getCustomApiSuffix()
         {
-            return "/services/apexrest/v2/OBO__c";
+            return "/services/apexrest/v1/OBO__c";
         }
 
         public String getObjectName()
@@ -121,6 +121,7 @@ namespace RinchemApiIntegrationConsole.OBO
 
     public class OBO
     {
+        //outbound order fields
         public String Name;
         public String Action__c;
         public String Order_Type__c;
@@ -130,7 +131,6 @@ namespace RinchemApiIntegrationConsole.OBO
         public String Bill_To_Customer_Code__c;
         public String Bill_To_Name__c;
         public String Carrier_Service__c;
-        public String Carrier_Account_Number__c;
         public String Freight_Payment_Terms_Type__c;
         public String Order_Date__c;
         public String Desired_Delivery_Date__c;
@@ -142,6 +142,25 @@ namespace RinchemApiIntegrationConsole.OBO
         public String Ship_To_Postal_Code__c;
         public String Ship_To_Country__c;
         public String From_Warehouse_Code__c;
+
+        //case fields
+        public String Importer_of_Record__c;
+        public String Special_Shipment_Instructions__c;
+        public String International_Shipment__c; //not in the system yet
+        public String Carrier_Account_Number__c; //not in the system yet
+        public String Approver_Company__c;
+        public String Approver_First_Name__c;
+        public String Approver_Last_Name__c;
+        public String Approver_Email__c;
+        public String Approver_Phone__c;
+        public String Requestor_Phone__c;
+        public String Requestor_Email__c;
+        public String Third_Party_Billing_Name__c;
+        public String Third_Party_Billing_Address__c;
+        public String Third_Party_Billing_City__c;
+        public String Third_Party_Billing_State__c;
+        public String Third_Party_Billing_Postal_Code__c;
+        public String Third_Party_Billing_PO_Number__c;
     }
 
     public class LineItem

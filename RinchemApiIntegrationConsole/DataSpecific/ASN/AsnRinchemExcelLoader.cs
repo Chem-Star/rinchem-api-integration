@@ -181,10 +181,10 @@ namespace RinchemApiIntegrationConsole.ASN
         public DataObject ConvertDataToObject()
         {
             AsnObject asnObject = new AsnObject();          //Initialize our ASN object
-            asnObject.rqst = new Request();                 //Initialize the request object
+            asnObject.initializeRequest();
 
-            asnObject.rqst.asn = populateAsn();             //Reformat data for the ASN info object
-            asnObject.rqst.lineItems = populateLineItems(); //Reformat data for each of our line items
+            asnObject.rqstObject.rqst.asn = populateAsn();             //Reformat data for the ASN info object
+            asnObject.rqstObject.rqst.lineItems = populateLineItems(); //Reformat data for each of our line items
 
             return asnObject;
         }
@@ -277,7 +277,7 @@ namespace RinchemApiIntegrationConsole.ASN
                 ConsoleLogger.log("Error parsing date - " + rawDate);
                 return "";
             }
-            String properDate = "20" + rawDate[2] + "-" + rawDate[0] + "-" + rawDate[1];
+            String properDate = "20" + rawDate[2] + "-" + rawDate[0] + "-" + rawDate[1] + "T12:00:00-06:00";
 
             return properDate;
         }

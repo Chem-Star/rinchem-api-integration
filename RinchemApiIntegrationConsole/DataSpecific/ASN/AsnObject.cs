@@ -1,22 +1,47 @@
-﻿using RinchemApiIntegrationConsole.UiSpecific;
+﻿using Newtonsoft.Json;
+using RinchemApiIntegrationConsole.UiSpecific;
+using RinchemApiIntegrator.UiSpecific;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace RinchemApiIntegrationConsole.ASN
 {
     class AsnObject : DataObject
     {
-        public Request rqst;
+        public AsnRequestObject rqstObject = new AsnRequestObject();     //This is serialized and sent to the API
+        public AsnResponseObject respObject = new AsnResponseObject();    //This is populated by deserializing the API json response
 
-        public void initialize()
+        public void initializeRequest()
         {
-            rqst = new Request();
-            rqst.asn = new ASN();
-            rqst.lineItems = new List<LineItems>();
+            rqstObject = new AsnRequestObject();
+            rqstObject.initialize();
         }
+        public void initializeResponse()
+        {
+            respObject = new AsnResponseObject();
+            respObject.initialize();
+        }
+
+        public String serializeRequest()
+        {
+            return JsonConvert.SerializeObject(rqstObject);
+        }
+        public void deserializeResponse(String response)
+        {
+            respObject.initialize();
+            respObject = JsonConvert.DeserializeObject<AsnResponseObject>(response);
+        }
+
+        public Window getResponseView()
+        {
+            return new AsnResponseViewer(respObject);
+        }
+
 
         public Boolean validate()
         {
+            Request rqst = rqstObject.rqst;
             bool validated = true;
             if (rqst.asn.Date_ASN_Sent__c               == null) { ConsoleLogger.log( "Missing required field \"Date_ASN_Sent__c\"               ");     validated = false; };
             if (rqst.asn.Supplier_Name__c               == "") { ConsoleLogger.log( "Missing required field \"Supplier_Name__c\"               ");     validated = false; };
@@ -46,17 +71,49 @@ namespace RinchemApiIntegrationConsole.ASN
             return validated;
         }
 
+        public String getCustomApiSuffix()
+        {
+            return "/services/apexrest/v1/ASN__c";
+        }
+
         public String getObjectName()
         {
-            return rqst.asn.Name;
+            return rqstObject.rqst.asn.Name;
         }
         public void setObjectName(String name)
         {
-            rqst.asn.Name = name;
+            rqstObject.rqst.asn.Name = name;
         }
         public void setAction(String action)
         {
-            rqst.asn.Action__c = action;
+            rqstObject.rqst.asn.Action__c = action;
+        }
+    }
+
+    public class AsnRequestObject
+    {
+        public Request rqst;
+
+        public void initialize()
+        {
+            rqst = new Request();
+            rqst.asn = new ASN();
+            rqst.lineItems = new List<LineItems>();
+        }
+    }
+
+    public class AsnResponseObject
+    {
+        public ASN asn;
+        public List<LineItems> lineItems;
+        public List<Status> statuses;
+        public List<Response> asns;
+
+        public void initialize()
+        {
+            asn = new ASN();
+            lineItems = new List<LineItems>();
+            statuses = new List<Status>();
         }
     }
 
@@ -64,6 +121,12 @@ namespace RinchemApiIntegrationConsole.ASN
     {
         public ASN asn;
         public List<LineItems> lineItems;
+    }
+    public class Response
+    {
+        public ASN asn;
+        public List<LineItems> lineItems;
+        public List<Status> statuses;
     }
 
     public class ASN
@@ -115,6 +178,11 @@ namespace RinchemApiIntegrationConsole.ASN
         public String Unit_of_Measure__c;
         public String Hold_Code__c;
         public String Serial_Number__c;
+    }
+
+    public class Status
+    {
+        public String Name;
     }
 
 }

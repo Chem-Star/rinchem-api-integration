@@ -88,15 +88,9 @@ namespace RinchemApiIntegrationConsole
         public Boolean tryApiSetup( DataObject obj , String httpVerb, String apiType)
         {
             string CustomAPI = "";
-            switch (apiType)
-            {
-                case "ASN":
-                    CustomAPI = "/services/apexrest/v1/ASN__c";
-                    break;
-                case "OBO":
-                    CustomAPI = "/services/apexrest/v1/OBO__c";
-                    break;
-                default:
+            CustomAPI = obj.getCustomApiSuffix();
+            if(CustomAPI == "")
+            { 
                     ConsoleLogger.log("Couldn't find the specified API type");
                     return false;
             }
@@ -110,15 +104,17 @@ namespace RinchemApiIntegrationConsole
             if (httpVerb != "GET") 
             {
                 //  Convert our asnObject into a json object string
-                string requestMessage = JsonConvert.SerializeObject(obj);
+                string requestMessage = obj.serializeRequest();
+
                 //  Convert our new JSON String into an HttpContent format that can actually be transmitted
                 //  Third parameter is stored as a 'MediaType'
                 content = new StringContent(requestMessage, Encoding.UTF8, "application/json");
             } else
             {  //GET requests append to the url and leave an empty body
                 String action = apiManager.getCurrentApiAction();
-                if (action == "GETBYNAME") CustomAPI += "?name=" + obj.getObjectName();
-                else if (action == "GETBYQUERY") CustomAPI += "?query=" + apiManager.getQueryString();
+                Console.WriteLine(obj.getObjectName());
+                if (action == "by Name") CustomAPI += "?name=" + obj.getObjectName();
+                else if (action == "by Query") CustomAPI += "?query=" + apiManager.getQueryString();
             }
 
             //  Create a new identifier based on our API path and our SalesForce instance URL
@@ -152,13 +148,13 @@ namespace RinchemApiIntegrationConsole
                 
                 //  Convert the Content of the response to a String
                 string result = await response.Content.ReadAsStringAsync();
-                //Console.WriteLine(result);
-                //ConsoleLogger.log(result);
+                Console.WriteLine(result);
+                // ConsoleLogger.log(result);
 
                 try
                 {
                     SalesForceResponse resultObject = JsonConvert.DeserializeObject<SalesForceResponse>(result);
-                    apiManager.setResponse(resultObject);
+                    apiManager.setResponse(result);
 
                     ConsoleLogger.log("|| Status: "+resultObject.status);
                     ConsoleLogger.log("|| Message: "+resultObject.message);
@@ -175,6 +171,7 @@ namespace RinchemApiIntegrationConsole
                     //resultObject.lineItems.ForEach(x => ConsoleLogger.log(JsonConvert.SerializeObject(x)));
                     if (resultObject.status == "Error")
                     {
+                        if (resultObject.error == "invalid_grant") isConnected = false;
                         return false;
                     }
                     else
@@ -182,28 +179,20 @@ namespace RinchemApiIntegrationConsole
                         return true;
                     }
                 }
-                catch
+                catch (Exception e)
                 {
-                    ConsoleLogger.log(result);
+                    ConsoleLogger.log(e.ToString());
+                    Console.WriteLine(e);
+
                     return false;
                 }
 
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
+                ConsoleLogger.log(e.ToString());
+                Console.WriteLine(e);
 
-                var innerException = e.InnerException;
-                while (innerException != null)
-                {
-                    Console.WriteLine(innerException.Message);
-                    Console.WriteLine(innerException.StackTrace);
-
-                    innerException = innerException.InnerException;
-                }
-
-                Console.ReadLine(); // Prevent the app from closing so the error can be seen
                 return false;
             }
         }
@@ -219,7 +208,10 @@ namespace RinchemApiIntegrationConsole
         public Object asn;                  //Returned by a successful ASN, POST or PATCH call
         public Object obo;                  //Returned by a successful ASN, POST or PATCH call
 
-        public List<ASN.Request> asns;      //Returned by a successful ASN, GET call
+        public String error;                //Returned by a failed API call i.e. invalid grant
+        public String error_description;    //Returned by a failed API call i.e. expired access/refresh token
+
+        public List<ASN.Response> asns;      //Returned by a successful ASN, GET call
 
     }
 

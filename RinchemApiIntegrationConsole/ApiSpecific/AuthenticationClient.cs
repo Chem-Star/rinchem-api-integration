@@ -68,7 +68,7 @@ namespace RinchemApiIntegrator.ApiSpecific
             var responseMessage = await _httpClient.SendAsync(request).ConfigureAwait(false);
             var response = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            ConsoleLogger.log(response);
+            //ConsoleLogger.log(response);
 
             if (responseMessage.IsSuccessStatusCode)
             {
@@ -84,6 +84,47 @@ namespace RinchemApiIntegrator.ApiSpecific
                 throw new Exception(response);
             }
         }
+        //public async Task TokenRefreshAsync(string clientId, string refreshToken, string clientSecret, string tokenRequestEndpointUrl)
+        // { 
+        //     var url = Common.FormatRefreshTokenUrl(
+        //         tokenRequestEndpointUrl,
+        //         clientId,
+        //         refreshToken,
+        //         clientSecret); 
+        //
+        //
+        //     var request = new HttpRequestMessage
+        //     { 
+        //         Method = HttpMethod.Post, 
+        //         RequestUri = new Uri(url)
+        //     }; 
+        //
+        //
+ 		//	request.Headers.UserAgent.ParseAdd(string.Concat(UserAgent, "/", ApiVersion)); 
+        //
+        //
+        //     var responseMessage = await _httpClient.SendAsync(request).ConfigureAwait(false); 
+        //     var response = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false); 
+        //
+        //
+        //     if (responseMessage.IsSuccessStatusCode) 
+        //     { 
+        //         var authToken = JsonConvert.DeserializeObject<AuthToken>(response); 
+        //
+        //
+        //         AccessToken = authToken.AccessToken; 
+        //         RefreshToken = refreshToken; 
+        //         InstanceUrl = authToken.InstanceUrl; 
+        //         Id = authToken.Id; 
+        //     } 
+        //     else 
+        //     { 
+        //        // var errorResponse = JsonConvert.DeserializeObject<AuthErrorResponse>(response); 
+        //        throw new Exception(response);
+        //     } 
+        // } 
+
+
 
         public class AuthToken
         {

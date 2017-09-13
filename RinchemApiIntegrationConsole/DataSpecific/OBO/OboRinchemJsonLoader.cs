@@ -103,8 +103,11 @@ namespace RinchemApiIntegrationConsole.OBO
         {
             try
             {
-                OboObject obo = JsonConvert.DeserializeObject<OboObject>(rawData);
-                return obo;
+                OboObject oboObject = new OboObject();
+                oboObject.initializeRequest();
+
+                oboObject.rqstObject = JsonConvert.DeserializeObject<OboRequestObject>(rawData);
+                return oboObject;
             }
             catch (Exception e)
             {

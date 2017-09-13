@@ -84,9 +84,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ApiSpecific\ApiObject.cs" />
     <Compile Include="ApiSpecific\AuthenticationClient.cs" />
     <Compile Include="DataSpecific\DataObject.cs" />
     <Compile Include="DataSpecific\ASN\AsnRinchemExcelLoader.cs" />
+    <Compile Include="DataSpecific\OBO2\Obo2Object.cs" />
+    <Compile Include="DataSpecific\OBO2\Obo2RinchemJsonLoader.cs" />
     <Compile Include="DataSpecific\OBO\OboObject.cs" />
     <Compile Include="DataSpecific\OBO\OboRinchemExcelLoader.cs" />
     <Compile Include="DataSpecific\OBO\OboRinchemJsonLoader.cs" />
@@ -113,6 +116,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UiSpecific\OboResponseViewer.xaml.cs">
+      <DependentUpon>OboResponseViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UiSpecific\Obo2ResponseViewer.xaml.cs">
+      <DependentUpon>Obo2ResponseViewer.xaml</DependentUpon>
+    </Compile>
     <Page Include="UiSpecific\AsnResponseViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -126,6 +135,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UiSpecific\ApiUserConsole.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UiSpecific\OboResponseViewer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UiSpecific\Obo2ResponseViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
