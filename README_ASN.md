@@ -102,26 +102,28 @@ POST requests will not be accepted into the WMS if any of these fields have impr
 {
 	"rqst": {
 		"asn": {
+			"Template_Version__c": "1.0",
+			"Action__c": "NEW",
 			"Date_ASN_Sent__c": "2017-04-20",
+			"Product_Owner_Id__c": "XXXXXX",
 			"Supplier_Name__c": "Example Supplier, INC",
 			"Rinchem_Supplier_Id__c": "EXA",
 			"ASN_Recipient_Name__c": "Rinchem",
 			"ASN_Recipient_Id__c": "16",
-			"Template_Version__c": "1.0",
+			"Destination_Warehouse_Code__c": "16",
 			"Estimated_Ship_Date__c": "2017-03-24",
 			"Estimated_Arrival_Date__c": "2017-03-24",
 			"Order_Type__c": "PO",
-			"Destination_Warehouse_Code__c": "11",
 			"Carrier_Id__c": "RINCHEM",
 			"Carrier_Name__c": "Rinchem",
-			"Purchase_Order_Number__c": "123456",
-			"Product_Owner_Id__c": "XXXXXX"
+			"Purchase_Order_Number__c": "123456"
 		},
 		"lineItems": [{
+			"Name": "1"
 			"Vendor_Part_Number__c": "1234-01",
 			"Product_Description__c": "EXAMPLE OXIDE, 65%",
 			"Quantity__c": "4",
-			"Unit_of_Measure__c": "BOTTLE",
+			"Unit_of_Measure__c": "BOTTLE"
 		}]
 	}
 }
